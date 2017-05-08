@@ -1,0 +1,46 @@
+<vxml version="2.0">
+<menu id="welcomeMenu">
+	<prompt>Welcome! Choose from<enumerate/></prompt>
+	<choice dtmf="1" next="#loginHandler">login</choice>
+	<choice dtmf="2"  next="#callABankAgent">call bank agent</choice>
+	<catch event="nomatch noinput help">
+		<reprompt />
+	</catch>
+</menu>
+
+<form id="loginHandler">
+
+		<field name="accountNumber"  type="number">
+			<prompt>Please input your account number.</prompt>
+		</field>
+		
+		<field name="pin" type="number">
+			<prompt>Please input your pin.</prompt>
+		</field>
+		
+	<block>
+		<goto next="http://127.0.0.1/bank/login.php" namelist="accountNumber pin"/>
+	</block>
+</form>
+
+<form id="callABankAgent">
+	<block>
+		<prompt>
+			Calling a bank agent. Please hold the line.
+			<audio src="http://127.0.0.1/bank/waiting5_0.wav"/>
+			All the lines are busy. Call again later!
+		</prompt>
+		<exit/>
+	</block>
+</form>
+
+<form id="goodbye">
+	<block>
+		<prompt>
+			Goodbye.
+		</prompt>
+		<exit/>
+	</block>
+</form>
+
+</vxml>
