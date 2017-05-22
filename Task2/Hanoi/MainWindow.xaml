@@ -16,10 +16,10 @@
         <Canvas x:Name="LeftCanvas" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom" Margin="10,0,440,60" Height="300" Width="200" Grid.Row="1" Grid.RowSpan="2"/>
         <Canvas x:Name="MidCanvas" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="222,0,228,60" Height="300" Width="200" Grid.Row="1" Grid.RowSpan="2"/>
         <Canvas x:Name="RightCanvas" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="429,0,10,60" Height="300" Width="200" Grid.Row="1" Grid.RowSpan="2"/>
-        <Slider HorizontalAlignment="Left" Margin="508,306,0,0" VerticalAlignment="Top" Width="126" Minimum="3" ValueChanged="Slider_ValueChanged" SmallChange="1" Cursor="" Grid.Row="2" AutoToolTipPlacement="TopLeft" TickPlacement="TopLeft"/>
+        <Slider HorizontalAlignment="Left" Margin="508,306,0,0" VerticalAlignment="Top" Width="126" Minimum="3" Value ="3" ValueChanged="Slider_ValueChanged" SmallChange="1" Cursor="" Grid.Row="2" AutoToolTipPlacement="TopLeft" TickPlacement="TopLeft"/>
         <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="402,302,0,0" VerticalAlignment="Top" Grid.Row="2"/>
         <Button x:Name="ButtonReset" Content="Reset" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,287,537,10" Grid.Row="2" />
-        <Button x:Name="ButtonReset_Copy" Content="Solve" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="137,288,410,9" Grid.Row="2" />
+        <Button x:Name="ButtonSolve" Content="Solve" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="137,288,410,9" Grid.Row="2" />
     </Grid>
 
 

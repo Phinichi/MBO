@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,18 +21,26 @@ namespace Hanoi
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Public Parameters
-        public double canvasBottomMargin = 0;
-        public double rectangleHeight = 0;
-        public double discAmount = 0;
-        public Canvas startCanvas = null;
+        #region Global Parameters
+
+        private double canvasBottomMargin = 0;
+        private double rectangleHeight = 0;
+        private int discAmount = 0;
+
+        private System.Threading.Tasks.Task t = null;
+        private CancellationTokenSource ts = null;
+        private  CancellationToken ct;
+
+        private Canvas startCanvas = null;
+
         #endregion
 
         #region Initialization
+
         public MainWindow()
         {
             InitializeComponent();
-            initializeGame();
+            initializeGame();       
         }
 
         #endregion
@@ -46,7 +55,20 @@ namespace Hanoi
 
         private void button_Solve_Click(object sender, RoutedEventArgs e)
         {
-            solveAlgorithm();
+
+            ts = new CancellationTokenSource();
+            ct = ts.Token;
+            t = new System.Threading.Tasks.Task(() =>
+            {
+                solveAlgorithm(discAmount, LeftCanvas, RightCanvas, MidCanvas);
+            }, ct); 
+            t.Start(); 
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            this.discAmount = (int) e.NewValue;
+            resetGame();
         }
 
         #endregion
@@ -58,7 +80,7 @@ namespace Hanoi
             rectangleHeight = 20;
             canvasBottomMargin = 10;
             discAmount = 3;
-            startGame();
+            resetGame();
         }
 
         private void startGame()
@@ -74,6 +96,7 @@ namespace Hanoi
                 double left = LeftCanvas.Width * 0.5 - width * 0.5;
                 width = width * 0.85;
                 rect.Fill = new SolidColorBrush(Colors.Black);
+                rect.Name = "disc"+ ((discAmount - x)).ToString();
 
                 Canvas.SetLeft(rect, left);
                 Canvas.SetTop(rect, top);
@@ -81,28 +104,32 @@ namespace Hanoi
 
                 LeftCanvas.Children.Add(rect);
             }
+
+            Console.WriteLine("\n Start Game with " + discAmount + " discs.");
         }
 
         private void resetGame()
         {
-            LeftCanvas.Children.Clear();
-            MidCanvas.Children.Clear();
-            RightCanvas.Children.Clear();
-            this.startCanvas = null;
+            Console.WriteLine("\n Reset Game.");
+            if (t != null && !t.IsCompleted)
+            {
+                ts.Cancel();
+            }
 
-            startGame();
+                LeftCanvas.Children.Clear();
+                MidCanvas.Children.Clear();
+                RightCanvas.Children.Clear();
+                this.startCanvas = null;
 
+
+                startGame();  
         }
 
         #endregion
 
         #region Parameter Handling
 
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            this.discAmount = e.NewValue;
-            resetGame();
-        }
+  
 
         #endregion 
 
@@ -145,7 +172,7 @@ namespace Hanoi
                         }
 
                     }
-
+                    
                     this.startCanvas.Children.Remove(startRect);
                     Canvas.SetTop(startRect, rectTop);
                     nach.Children.Add(startRect);
@@ -163,9 +190,41 @@ namespace Hanoi
         #region Automated Game Handling
 
 
-        private void solveAlgorithm()
+        private void solveAlgorithm(double n, Canvas strtCanvas, Canvas tarCanvas, Canvas othrCanvas)
         {
-            throw new NotImplementedException();
+            if (n == 1)
+            {
+               this.Dispatcher.Invoke(
+                    new Action(() =>
+                    {
+                        if (!ts.IsCancellationRequested)
+                        {
+                            startCanvas = strtCanvas;
+                            Rectangle startRect = strtCanvas.Children[strtCanvas.Children.Count - 1] as Rectangle;
+                            Console.WriteLine("\n Move " + startRect.Name + " from rod " + strtCanvas.Name + " to rod" + tarCanvas.Name);
+                            moveDisc(tarCanvas, 5, 5);
+                        }
+                       
+                    }));
+            }
+            else
+            {
+                solveAlgorithm(n - 1, strtCanvas, othrCanvas, tarCanvas);
+
+                this.Dispatcher.Invoke(
+                   new Action(() =>
+                   {
+                       if (!ts.IsCancellationRequested)
+                       {
+                           startCanvas = strtCanvas;
+                           Rectangle startRect = strtCanvas.Children[strtCanvas.Children.Count - 1] as Rectangle;
+                           Console.WriteLine("\n Move " + startRect.Name + " from " + strtCanvas.Name + " to " + tarCanvas.Name);
+                           moveDisc(tarCanvas, 5, 5);
+                       }
+                   }));
+
+                solveAlgorithm(n - 1, othrCanvas, tarCanvas, strtCanvas);
+            }       
         }
 
         #endregion
