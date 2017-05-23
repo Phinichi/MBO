@@ -117,9 +117,12 @@ namespace Hanoi
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void canvas_Click(Object sender, MouseButtonEventArgs e)
         {
+            Canvas sentCanvas = sender as Canvas;
+
             if (this.startCanvas == null)
             {
-                this.startCanvas = sender as Canvas;
+                if (sentCanvas.Children.Count > 0)
+                    this.startCanvas = sentCanvas;
             }
             else
             {
