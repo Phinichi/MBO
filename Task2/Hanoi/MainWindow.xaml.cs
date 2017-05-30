@@ -34,6 +34,9 @@ namespace Hanoi
 
         private Canvas startCanvas = null;
 
+        private bool inputGesture;
+        private List<Point> gesturePositions;
+
         #endregion
 
         #region Initialization
@@ -53,7 +56,9 @@ namespace Hanoi
             rectangleStartWidth = 150;
             canvasBottomMargin = 10;
             discAmount = 3;
-
+            inputGesture = false;
+            gesturePositions = new List<Point>();
+            
             resetGame();
         }
 
@@ -183,7 +188,8 @@ namespace Hanoi
                 MidCanvas.Children.Clear();
                 RightCanvas.Children.Clear();
                 this.startCanvas = null;
-            
+
+                inputGesture = false;
                 startGame();  
         }
 
@@ -287,6 +293,100 @@ namespace Hanoi
         }
 
         #endregion
+
+        #region Gesture Handling
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+
+            if(inputGesture && e != null){
+                IInputElement iE = hanoiGrid;
+                Point pos = e.GetPosition(iE);
+                gesturePositions.Add(pos);
+            }
+                 
+        }
+
+        //Register gesture input, input start point
+        private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            inputGesture = true;
+            IInputElement iE = hanoiGrid;
+            gesturePositions.Add(e.GetPosition(iE));
+        }
+
+        private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            inputGesture = false;
+            List<double> gestureAngles = calculateAngles();
+            String gestureClass = classifyGesture(gestureAngles);
+
+            // Write angles List to xml for templating
+            (new System.Xml.Serialization.XmlSerializer(gestureAngles.GetType())).Serialize(new System.IO.StreamWriter(@"c:\temp\template.xml"), gestureAngles);
+
+            gesturePositions.Clear();
+        }
+
+        private List<double> calculateAngles()
+        {
+            List<double> gestureAngles = new List<double>();
+
+            for (int i = 0; i < gesturePositions.Count - 1; i++)
+            {
+                // A
+                Point p1 = gesturePositions[0];
+                // B (Mitte)
+                Point p2 = gesturePositions[i];
+                // C
+                Point p3 = gesturePositions[i+1];
+
+                double a, b, c;
+                // Anliegend an Mitte: a und b
+                a = Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2));
+                b = Math.Sqrt(Math.Pow((p2.X - p3.X), 2) + Math.Pow((p2.Y - p3.Y), 2));
+                c = Math.Sqrt(Math.Pow((p3.X - p1.X), 2) + Math.Pow((p3.Y - p1.Y), 2));
+
+                double angle = Math.Acos((Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2))/ (2 *  a * b));
+                gestureAngles.Add(RadToDeg(angle));
+            }
+            
+            //1 mittlere
+            //sqrt((P1x - P2x)2 + (P1y - P2y)2)
+            //arccos((P122 + P132 - P232) / (2 * P12 * P13))
+
+            return gestureAngles;
+        }
+
+        private List<double> TemplateOne()
+        {
+            return new List<double>();
+        }
+
+        private List<double> TemplateTwo()
+        {
+            return new List<double>();
+        }
+
+        private List<double> TemplateThree()
+        {
+            return new List<double>();
+        }
+
+        private String classifyGesture(List<double> gestureAngles)
+        {
+            return "";
+        }
+
+        // Transform Radiant value to Degree
+        private double RadToDeg(double rad)
+        {
+            return rad * (180.0 / Math.PI);
+        }
+
+        #endregion
+
+     
+
+
 
 
     }

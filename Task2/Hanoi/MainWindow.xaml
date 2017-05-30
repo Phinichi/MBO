@@ -1,12 +1,12 @@
 ﻿<Window x:Class="Hanoi.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Türme von Hanoi" Height="444" Width="654">
+        Title="Türme von Hanoi" Height="444" Width="654" MouseMove="Window_MouseMove"  MouseRightButtonUp="Window_MouseRightButtonUp" MouseRightButtonDown="Window_MouseRightButtonDown">
     <Window.Background>
         <SolidColorBrush Color="White" />
     </Window.Background>
 
-    <Grid HorizontalAlignment="Left" Width="650">
+    <Grid HorizontalAlignment="Left" Width="650" x:Name="hanoiGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="21*"/>
             <RowDefinition Height="50*"/>
