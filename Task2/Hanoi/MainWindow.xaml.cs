@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Array;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml;
 
 namespace Hanoi
 {
@@ -21,6 +27,7 @@ namespace Hanoi
     /// </summary>
     public partial class MainWindow : Window
     {
+
         #region Global Parameters
 
         private double canvasBottomMargin = 0;
@@ -37,6 +44,10 @@ namespace Hanoi
         private bool inputGesture;
         private List<Point> gesturePositions;
 
+        private List<double> templateOne;
+        private List<double> templateTwo;
+        private List<double> templateThree;
+
         #endregion
 
         #region Initialization
@@ -44,6 +55,7 @@ namespace Hanoi
         public MainWindow()
         {
             InitializeComponent();
+            initializeTemplates();
             initializeGame();       
         }
 
@@ -60,6 +72,19 @@ namespace Hanoi
             gesturePositions = new List<Point>();
             
             resetGame();
+        }
+
+        private void initializeTemplates()
+        {
+            templateOne = new List<double>();
+            templateTwo = new List<double>();
+            templateThree = new List<double>();
+
+            MyClass.Deserialize(templateOne, @"../../template1.xml");
+
+            MyClass.Deserialize(templateTwo, @"../../template2.xml");
+
+            MyClass.Deserialize(templateThree, @"../../template3.xml");      
         }
 
         #endregion
@@ -299,7 +324,7 @@ namespace Hanoi
         {
 
             if(inputGesture && e != null){
-                IInputElement iE = hanoiGrid;
+                IInputElement iE = (IInputElement) sender;
                 Point pos = e.GetPosition(iE);
                 gesturePositions.Add(pos);
             }
@@ -310,7 +335,7 @@ namespace Hanoi
         private void Window_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             inputGesture = true;
-            IInputElement iE = hanoiGrid;
+            IInputElement iE = (IInputElement)sender;
             gesturePositions.Add(e.GetPosition(iE));
         }
 
@@ -318,10 +343,10 @@ namespace Hanoi
         {
             inputGesture = false;
             List<double> gestureAngles = calculateAngles();
-            String gestureClass = classifyGesture(gestureAngles);
+            //String gestureClass = classifyGesture(gestureAngles);
 
             // Write angles List to xml for templating
-            (new System.Xml.Serialization.XmlSerializer(gestureAngles.GetType())).Serialize(new System.IO.StreamWriter(@"c:\temp\template.xml"), gestureAngles);
+            //(new System.Xml.Serialization.XmlSerializer(gestureAngles.GetType())).Serialize(new System.IO.StreamWriter(@"\template.xml"), gestureAngles);
 
             gesturePositions.Clear();
         }
@@ -353,27 +378,84 @@ namespace Hanoi
             //sqrt((P1x - P2x)2 + (P1y - P2y)2)
             //arccos((P122 + P132 - P232) / (2 * P12 * P13))
 
+            //Creating Templates in template1,2,3.xml here
+            //MyClass.SerializeObject(gestureAngles, "template3.xml");
+
             return gestureAngles;
         }
 
-        private List<double> TemplateOne()
-        {
-            return new List<double>();
-        }
-
-        private List<double> TemplateTwo()
-        {
-            return new List<double>();
-        }
-
-        private List<double> TemplateThree()
-        {
-            return new List<double>();
-        }
+      
 
         private String classifyGesture(List<double> gestureAngles)
         {
+
+            Array localDistancesToTemplate1 =  calculateLocalDistances(gestureAngles, templateOne);
+            Array localDistancesToTemplate2 =  calculateLocalDistances(gestureAngles, templateTwo);
+            Array localDistancesToTemplate3 =  calculateLocalDistances(gestureAngles, templateThree);
+
+ 
+           // List<double distancesToTemplate1 = calculateDistances(localDistancesToTemplate1);
+           // List<double distancesToTemplate2 = calculateDistances(localDistancesToTemplate2);
+           // List<double distancesToTemplate3 = calculateDistances(localDistancesToTemplate3);
+
             return "";
+        }
+
+        private Array calculateLocalDistances(List<double> gestureAngles, List<double> templateAngles)
+        {
+            
+
+            double[][] distances =  null;
+            //ARRAY WITH ONE DIM GESTUREANGLES.COUNT AND ONE templateAngels.COUNT
+
+            //distance = new double[gestureAngles.Count][templateAngles.Count];
+            //Array lengths = Array.CreateInstance(typeof(int), 2);
+            //lengths.SetValue(gestureAngles.Count, 0);
+            //lengths.SetValue(templateAngles.Count, 1);
+
+            //Array lowerBounds = Array.CreateInstance(typeof(int), 2);
+            //lengths.SetValue(0, 0);
+            //lengths.SetValue(0, 1);
+
+
+            //Array distances = Array.CreateInstance(typeof(Int32), lengths, lowerBounds);
+
+
+            for (int i = 0; i < gestureAngles.Count; i++)
+            {
+                for (int j = 0; j < templateAngles.Count; j++)
+			    {
+                    double angleDistance;
+
+			        if (Math.Abs(gestureAngles[i] - templateOne[i]) < Math.PI) angleDistance = ((1 / Math.PI) * (gestureAngles[i] - templateOne[i]));                     
+                    else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - gestureAngles[i] - templateOne[i]));
+                      
+                    //Normalize distance
+                    angleDistance = (angleDistance * (1 / (gestureAngles.Count + templateAngles.Count)));
+
+                    //distances[i][j] = angleDistance;
+                    //FILL DISTANCES
+			    }
+            }
+
+            return distances;
+        }
+
+        private Array calculateDistances(Array distances)
+        {
+
+            Array distancesToTemplates = null;
+                //Array.CreateInstance(int, distances., distances.GetLength(1));
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+			    {
+			        //C algorithm with min + d
+			    }
+            }
+
+            return distancesToTemplates;
         }
 
         // Transform Radiant value to Degree
@@ -384,10 +466,32 @@ namespace Hanoi
 
         #endregion
 
-     
+    }
 
+    public static class MyClass
+    {
+        public static void SerializeObject(this List<double> list, string fileName)
+        {
+            var serializer = new XmlSerializer(typeof(List<double>));
+            using (var stream = File.OpenWrite(fileName))
+            {
+                serializer.Serialize(stream, list);
+               
+            }
+            
+        }
 
+        public static void Deserialize(this List<double> list, string fileName)
+        {
+            var serializer = new XmlSerializer(typeof(List<double>));
+            using (var stream = File.OpenRead(fileName))
+            {
+                var other = (List<double>)(serializer.Deserialize(stream));
+                list.Clear();
+                list.AddRange(other);
 
-
+            }
+        }
     }
 }
+
