@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Array;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -343,6 +342,8 @@ namespace Hanoi
         {
             inputGesture = false;
             List<double> gestureAngles = calculateAngles();
+
+            int templateNumber = classifyGesture(gestureAngles);
             //String gestureClass = classifyGesture(gestureAngles);
 
             // Write angles List to xml for templating
@@ -357,21 +358,26 @@ namespace Hanoi
 
             for (int i = 0; i < gesturePositions.Count - 1; i++)
             {
-                // A
-                Point p1 = gesturePositions[0];
-                // B (Mitte)
-                Point p2 = gesturePositions[i];
-                // C
-                Point p3 = gesturePositions[i+1];
+                if (i > 1)
+                {
+                    // A
+                    Point p1 = gesturePositions[0];
+                    // B (Mitte)
+                    Point p2 = gesturePositions[i];
+                    // C
+                    Point p3 = gesturePositions[i + 1];
 
-                double a, b, c;
-                // Anliegend an Mitte: a und b
-                a = Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2));
-                b = Math.Sqrt(Math.Pow((p2.X - p3.X), 2) + Math.Pow((p2.Y - p3.Y), 2));
-                c = Math.Sqrt(Math.Pow((p3.X - p1.X), 2) + Math.Pow((p3.Y - p1.Y), 2));
+                    double a, b, c;
+                    // Anliegend an Mitte: a und b
+                    a = Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2));
+                    b = Math.Sqrt(Math.Pow((p2.X - p3.X), 2) + Math.Pow((p2.Y - p3.Y), 2));
+                    c = Math.Sqrt(Math.Pow((p3.X - p1.X), 2) + Math.Pow((p3.Y - p1.Y), 2));
 
-                double angle = Math.Acos((Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2))/ (2 *  a * b));
-                gestureAngles.Add(RadToDeg(angle));
+                    double angle = Math.Acos((Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2)) / (2 * a * b));
+
+                    gestureAngles.Add(RadToDeg(angle));
+                }
+               
             }
             
             //1 mittlere
@@ -386,77 +392,111 @@ namespace Hanoi
 
       
 
-        private String classifyGesture(List<double> gestureAngles)
+        private int classifyGesture(List<double> gestureAngles)
         {
 
-            Array localDistancesToTemplate1 =  calculateLocalDistances(gestureAngles, templateOne);
-            Array localDistancesToTemplate2 =  calculateLocalDistances(gestureAngles, templateTwo);
-            Array localDistancesToTemplate3 =  calculateLocalDistances(gestureAngles, templateThree);
+            double localDistanceToTemplate1 = calculateLocalDistance(gestureAngles, templateOne);
+            double localDistanceToTemplate2 = calculateLocalDistance(gestureAngles, templateTwo);
+            double localDistanceToTemplate3 = calculateLocalDistance(gestureAngles, templateThree);
 
- 
-           // List<double distancesToTemplate1 = calculateDistances(localDistancesToTemplate1);
-           // List<double distancesToTemplate2 = calculateDistances(localDistancesToTemplate2);
-           // List<double distancesToTemplate3 = calculateDistances(localDistancesToTemplate3);
+            int i = 0;
+            if (localDistanceToTemplate1 < localDistanceToTemplate2 && localDistanceToTemplate1 < localDistanceToTemplate3) i = 1;
+            else if (localDistanceToTemplate2 < localDistanceToTemplate1 && localDistanceToTemplate2 < localDistanceToTemplate3) i = 2;
+            else i = 3;
 
-            return "";
+            return i;
         }
 
-        private Array calculateLocalDistances(List<double> gestureAngles, List<double> templateAngles)
+        private double calculateLocalDistance(List<double> gestureAngles, List<double> templateAngles)
         {
-            
-
-            double[][] distances =  null;
-            //ARRAY WITH ONE DIM GESTUREANGLES.COUNT AND ONE templateAngels.COUNT
-
-            //distance = new double[gestureAngles.Count][templateAngles.Count];
-            //Array lengths = Array.CreateInstance(typeof(int), 2);
-            //lengths.SetValue(gestureAngles.Count, 0);
-            //lengths.SetValue(templateAngles.Count, 1);
-
-            //Array lowerBounds = Array.CreateInstance(typeof(int), 2);
-            //lengths.SetValue(0, 0);
-            //lengths.SetValue(0, 1);
 
 
-            //Array distances = Array.CreateInstance(typeof(Int32), lengths, lowerBounds);
+            double[,] distances = new double[gestureAngles.Count, templateAngles.Count];
 
+            //DTW Distances
+            //d(i,j) =... {}
 
             for (int i = 0; i < gestureAngles.Count; i++)
             {
                 for (int j = 0; j < templateAngles.Count; j++)
 			    {
-                    double angleDistance;
+                    double angleDistance = 0;
 
-			        if (Math.Abs(gestureAngles[i] - templateOne[i]) < Math.PI) angleDistance = ((1 / Math.PI) * (gestureAngles[i] - templateOne[i]));                     
-                    else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - gestureAngles[i] - templateOne[i]));
-                      
-                    //Normalize distance
-                    angleDistance = (angleDistance * (1 / (gestureAngles.Count + templateAngles.Count)));
 
-                    //distances[i][j] = angleDistance;
-                    //FILL DISTANCES
+
+                    if (Math.Abs(gestureAngles[i] - templateAngles[j]) < Math.PI) angleDistance = ((1 / Math.PI) * Math.Abs(gestureAngles[i] - templateAngles[j]));
+                    else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - Math.Abs(gestureAngles[i] - templateAngles[j])));
+
+
+                     
+                    distances[i,j] = angleDistance;
 			    }
             }
 
-            return distances;
-        }
+            //Local Distances 
+            //C(i, j) = min(C(i, j -1),2×C(i -1, j -1),C(i -1, j))+ d(i, j)
 
-        private Array calculateDistances(Array distances)
-        {
+            double[,] localDistances = new double[gestureAngles.Count, templateAngles.Count];
 
-            Array distancesToTemplates = null;
-                //Array.CreateInstance(int, distances., distances.GetLength(1));
-
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < localDistances.GetLength(0); i++)
             {
-                for (int j = 0; j < 10; j++)
-			    {
-			        //C algorithm with min + d
-			    }
+                for (int j = 0; j < localDistances.GetLength(1); j++)
+                {
+                    double[] localMinimums = new double[3];
+
+                    if (j == 0 && i == 0) {
+                        localMinimums[0] = 0;
+                        localMinimums[1] = 0;
+                        localMinimums[2] = 0;
+                    }
+                    else if (j == 0 && i != 0){
+                        localMinimums[0] = 0;
+                        localMinimums[1] = 0;
+                        localMinimums[2] = localDistances[i - 1, j];
+                    }
+                    else if (i == 0 && j != 0)
+                    {
+                        localMinimums[0] = localDistances[i, j - 1];
+                        localMinimums[1] = 0;
+                        localMinimums[2] = 0;
+                    }
+                    else
+                    {
+                        localMinimums[0] = localDistances[i, j - 1];
+                        localMinimums[1] = 2 * localDistances[i - 1, j - 1];
+                        localMinimums[2] = localDistances[i - 1, j];
+
+                    }
+
+                        double localMinimum = Math.Min((Math.Min(localMinimums[0], localMinimums[1])), localMinimums[2]);
+                        localDistances[i, j] = localMinimum + distances[i, j];
+                    
+
+                }
+                
             }
 
-            return distancesToTemplates;
+            //Normalizing
+            //C(i,j)* 1/N+M
+
+            double normalizerVal = (1.0 / ((double) (localDistances.GetLength(0) + localDistances.GetLength(1))));
+
+            double distanceSum = 0;
+
+            for (int i = 0; i < localDistances.GetLength(0); i++)
+            {
+                for (int j = 0; j < localDistances.GetLength(1); j++)
+                {
+                    distanceSum = distanceSum + localDistances[i, j];
+                }
+            }
+
+            distanceSum = distanceSum * normalizerVal;
+
+            return (distanceSum);
         }
+
+
 
         // Transform Radiant value to Degree
         private double RadToDeg(double rad)
