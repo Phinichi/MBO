@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Array;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +18,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using System.Speech.Recognition;
 
 namespace Hanoi
 {
@@ -56,7 +56,8 @@ namespace Hanoi
         {
             InitializeComponent();
             initializeTemplates();
-            initializeGame();       
+            initializeGame();
+            initializeSpeechRec();
         }
 
         /// <summary>
@@ -110,23 +111,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Solve_Click(object sender, RoutedEventArgs e)
         {
-            if (MidCanvas.Children.Count == 0 && RightCanvas.Children.Count == 0 && t == null)
-            {
-                ts = new CancellationTokenSource();
-                ct = ts.Token;
-
-                t = new System.Threading.Tasks.Task(() =>
-                {
-                    solveAlgorithm(discAmount, LeftCanvas, RightCanvas, MidCanvas);
-                }, ct);
-
-                t.Start();
-            }
-            else
-            {
-                MessageBox.Show("Reset the Game first!");
-            }
-           
+            solveGame();           
         }
 
         /// <summary>
@@ -216,6 +201,26 @@ namespace Hanoi
 
                 inputGesture = false;
                 startGame();  
+        }
+
+        private void solveGame()
+        {
+            if (MidCanvas.Children.Count == 0 && RightCanvas.Children.Count == 0 && t == null)
+            {
+                ts = new CancellationTokenSource();
+                ct = ts.Token;
+
+                t = new System.Threading.Tasks.Task(() =>
+                {
+                    solveAlgorithm(discAmount, LeftCanvas, RightCanvas, MidCanvas);
+                }, ct);
+
+                t.Start();
+            }
+            else
+            {
+                MessageBox.Show("Reset the Game first!");
+            }
         }
 
         #endregion
@@ -405,7 +410,7 @@ namespace Hanoi
         {
             
 
-            double[][] distances =  null;
+            double[][] distances =  new double[0][];
             //ARRAY WITH ONE DIM GESTUREANGLES.COUNT AND ONE templateAngels.COUNT
 
             //distance = new double[gestureAngles.Count][templateAngles.Count];
@@ -433,7 +438,7 @@ namespace Hanoi
                     //Normalize distance
                     angleDistance = (angleDistance * (1 / (gestureAngles.Count + templateAngles.Count)));
 
-                    //distances[i][j] = angleDistance;
+                    distances[i][j] = angleDistance;
                     //FILL DISTANCES
 			    }
             }
@@ -466,6 +471,87 @@ namespace Hanoi
 
         #endregion
 
+        #region Speech Handling
+
+        private void initializeSpeechRec()
+        {
+            SpeechRecognizer sr = new SpeechRecognizer();
+
+            Choices commands = new Choices();
+            commands.Add(new string[] {
+                "move left to middle",
+                "move left to right",
+                "move middle to left",
+                "move middle to right",
+                "move right to left",
+                "move right to middle",
+                "start game",
+                "reset game",
+                "solve game"
+            });
+
+            GrammarBuilder gb = new GrammarBuilder();
+            gb.Append(commands);
+
+            // Create the Grammar instance.
+            Grammar g = new Grammar(gb);
+
+            sr.LoadGrammar(g);
+
+            sr.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
+        }
+
+        private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
+        {
+            switch (e.Result.Text)
+            {
+                case "start game":
+                    startGame();
+                    break;
+                case "reset game":
+                    resetGame();
+                    break;
+                case "solve game":
+                    solveGame();
+                    break;
+                case "move left to middle":
+                    this.startCanvas = this.LeftCanvas;
+                    moveDisc(this.MidCanvas);
+                    break;
+                case "move left to right":
+                    this.startCanvas = this.LeftCanvas;
+                    moveDisc(this.RightCanvas);
+                    break;
+                case "move middle to left":
+                    this.startCanvas = this.MidCanvas;
+                    moveDisc(this.LeftCanvas);
+                    break;
+                case "move middle to right":
+                    this.startCanvas = this.MidCanvas;
+                    moveDisc(this.LeftCanvas);
+                    break;
+                case "move right to left":
+                    this.startCanvas = this.RightCanvas;
+                    moveDisc(this.LeftCanvas);
+                    break;
+                case "move right to middle":
+                    this.startCanvas = this.RightCanvas;
+                    moveDisc(this.MidCanvas);
+                    break;
+                default:
+                    onNotRecoq();
+                    break;
+            }
+        }
+
+        private void onNotRecoq()
+        {
+            System.Speech.Synthesis.SpeechSynthesizer synthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
+
+            synthesizer.Speak("Sorry, I did not understand you.");
+        }
+
+        #endregion
     }
 
     public static class MyClass
