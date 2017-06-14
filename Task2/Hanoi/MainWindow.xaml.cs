@@ -507,7 +507,7 @@ namespace Hanoi
             }
             
             //Creating Templates in template1,2,3.xml here
-            //MyClass.SerializeObject(gestureAngles, "template3.xml");
+            //MyClass.SerializeObject(gestureAngles, "template2.xml");
 
             return gestureAngles;
         }
@@ -561,44 +561,34 @@ namespace Hanoi
             //C(i, j) = min(C(i, j -1),2×C(i -1, j -1),C(i -1, j))+ d(i, j)
 
             double[,] localDistances = new double[gestureAngles.Count, templateAngles.Count];
-            double localDistance = 0;
 
-            for (int i = 0; i < distances.GetLength(0); i++)
+
+            localDistances[0, 0] = distances[0, 0];
+
+            for (int i = 1; i < distances.GetLength(0); i++)
             {
-                for (int j = 0; j < distances.GetLength(1); j++)
+                localDistances[i, 0] = distances[i, 0] + localDistances[i-1, 0];
+            }
+
+            for (int i = 1; i < distances.GetLength(1); i++)
+            {
+                localDistances[0, i] = distances[0, i] + localDistances[0, i-1];
+            }
+
+            for (int i = 1; i < localDistances.GetLength(0); i++)
+            {
+                for (int j = 1; j < localDistances.GetLength(1); j++)
                 {
                     double[] localMinimums = new double[3];
 
-                    if (j == 0 && i == 0) {
-                        localMinimums[0] = 0;
-                        localMinimums[1] = 0;
-                        localMinimums[2] = 0;
-                    }
-                    else if (j == 0 && i != 0){
-                        localMinimums[0] = 0;
-                        localMinimums[1] = 0;
-                        localMinimums[2] = distances[i - 1, j];
-                    }
-                    else if (i == 0 && j != 0)
-                    {
-                        localMinimums[0] = distances[i, j - 1];
-                        localMinimums[1] = 0;
-                        localMinimums[2] = 0;
-                    }
-                    else
-                    {
-                        localMinimums[0] = distances[i, j - 1];
-                        localMinimums[1] = 2 * distances[i - 1, j - 1];
-                        localMinimums[2] = distances[i - 1, j];
 
-                    }
+                        localMinimums[0] = localDistances[i, j - 1];
+                        localMinimums[1] = 2 * localDistances[i - 1, j - 1];
+                        localMinimums[2] = localDistances[i - 1, j];
 
                         double localMinimum = Math.Min((Math.Min(localMinimums[0], localMinimums[1])), localMinimums[2]);
                         localDistances[i, j] = localMinimum + distances[i, j];
-
-                        localDistance = localMinimum + distances[i, j];
-                    
-
+                   
                 }
                 
             }
@@ -608,19 +598,10 @@ namespace Hanoi
 
             double normalizerVal = (1.0 / ((double) (localDistances.GetLength(0) + localDistances.GetLength(1))));
 
-            double distanceSum = 0;
+            double distanceSum = localDistances[localDistances.GetLength(0)-1, localDistances.GetLength(1)-1] * normalizerVal;
 
-            for (int i = 0; i < localDistances.GetLength(0); i++)
-            {
-                for (int j = 0; j < localDistances.GetLength(1); j++)
-                {
-                 distanceSum = distanceSum + localDistances[i, j];
-                }
-            }
 
-            distanceSum = distanceSum * normalizerVal;
-
-            return (localDistance * normalizerVal);
+            return distanceSum;
         }
 
 
