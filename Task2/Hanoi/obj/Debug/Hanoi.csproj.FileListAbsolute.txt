@@ -24,3 +24,16 @@ E:\Universität\Module\MultimodaleBenutzeroberflächen\Übungen\Task2\Hanoi\obj\
 E:\Universität\Module\MultimodaleBenutzeroberflächen\Übungen\Task2\Hanoi\obj\Debug\Hanoi.Properties.Resources.resources
 E:\Universität\Module\MultimodaleBenutzeroberflächen\Übungen\Task2\Hanoi\obj\Debug\Hanoi.csproj.GenerateResource.Cache
 E:\Universität\Module\MultimodaleBenutzeroberflächen\Übungen\Task2\Hanoi\obj\Debug\Properties\App.g.cs
+C:\Users\Duci\projects\MBO\Task2\Hanoi\bin\Debug\Hanoi.exe.config
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\MainWindow.baml
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\MainWindow.g.cs
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Properties\App.g.cs
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi_MarkupCompile.cache
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi.g.resources
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi.Properties.Resources.resources
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi.csproj.GenerateResource.Cache
+C:\Users\Duci\projects\MBO\Task2\Hanoi\bin\Debug\Hanoi.exe
+C:\Users\Duci\projects\MBO\Task2\Hanoi\bin\Debug\Hanoi.pdb
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi.exe
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi.pdb
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Debug\Hanoi.csprojResolveAssemblyReference.cache
