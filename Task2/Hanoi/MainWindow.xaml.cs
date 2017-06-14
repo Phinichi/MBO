@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.IO;
@@ -34,6 +33,7 @@ namespace Hanoi
         private double rectangleHeight = 0;
         private double rectangleStartWidth = 0;
         private int discAmount = 0;
+        private int inputFeedbackOldRows = 0;
 
         private System.Threading.Tasks.Task t = null;
         private CancellationTokenSource ts = null;
@@ -100,6 +100,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Reset_Click(object sender, RoutedEventArgs e)
         {
+            setInputFeedback("Game reset");
             resetGame();
         }
 
@@ -111,6 +112,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Solve_Click(object sender, RoutedEventArgs e)
         {
+            setInputFeedback("Automatic Solving");
             solveGame();           
         }
 
@@ -122,8 +124,16 @@ namespace Hanoi
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             this.discAmount = (int) e.NewValue;
+
             resetGame();
         }
+
+        private void Slider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+
+            if (discAmount != null && discAmount > 0) setInputFeedback("Disc Amount: " + discAmount);
+        }
+                      
 
         /// <summary>
         /// Handles the Click event of the canvas.
@@ -134,17 +144,70 @@ namespace Hanoi
         {
             Canvas sentCanvas = sender as Canvas;
 
-            if (this.startCanvas == null)
+            setInputFeedback("Canvas Click: " + sentCanvas.Name);
+
+            handleCanvasInput(sentCanvas);
+          
+        }
+
+        #endregion
+
+        #region Canvas Handling 
+
+        private void handleCanvasInput(Canvas canvas)
+        {
+            if (canvas != null)
             {
-                if (sentCanvas.Children.Count > 0)
-                    this.startCanvas = sentCanvas;
-            }
-            else
-            {
-                moveDisc(sender as Canvas);
-                this.startCanvas = null;
+                if (this.startCanvas == null)
+                {
+                    if (canvas.Children.Count > 0)
+                        setStartCanvas(canvas);
+                }
+                else
+                {
+                    moveDisc(canvas);
+                    resetStartCanvas();
+                }
             }
 
+        }
+
+        private void setStartCanvas(Canvas canvas)
+        {
+            if (canvas != null)
+            {
+                this.startCanvas = canvas;
+                Brush oldback = this.startCanvas.Background;
+                this.startCanvas.Background = new SolidColorBrush(Colors.Green);
+            }
+        }
+
+        private void resetStartCanvas()
+        {
+            if (startCanvas != null)
+            {
+
+                this.startCanvas.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#FFF0F0F0"));
+
+                this.startCanvas = null;
+            }
+        }
+
+        #endregion
+
+        #region Feedback Handling
+
+        private void setInputFeedback(string lastInput){
+            if (lastInput != null)
+            {
+                InputFeedbackOld.Content = InputFeedbackOld.Content + "\n" + InputFeedbackNew.Content;
+                inputFeedbackOldRows = inputFeedbackOldRows + 1;
+
+
+                InputFeedbackNew.Content = lastInput;
+                
+            }
+            
         }
 
         #endregion
@@ -285,6 +348,7 @@ namespace Hanoi
         /// <param name="othrCanvas">The extra canvas.</param>
         private void solveAlgorithm(double n, Canvas strtCanvas, Canvas tarCanvas, Canvas othrCanvas)
         {
+
             if (n == 1)
             {
                this.Dispatcher.Invoke(
@@ -346,10 +410,30 @@ namespace Hanoi
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
+
             inputGesture = false;
             List<double> gestureAngles = calculateAngles();
 
             int templateNumber = classifyGesture(gestureAngles);
+
+            Canvas canvas = null;
+
+            switch (templateNumber)
+            {
+                case 1: canvas = LeftCanvas; 
+                    setInputFeedback("Gesture: 1");
+                    break;
+                case 2: canvas = MidCanvas; 
+                    setInputFeedback("Gesture: 2");
+                    break;
+                case 3: canvas = RightCanvas; 
+                    setInputFeedback("Gesture: 3");
+                    break;
+            }
+
+            
+
+            handleCanvasInput(canvas);
             //String gestureClass = classifyGesture(gestureAngles);
 
             // Write angles List to xml for templating
@@ -379,6 +463,10 @@ namespace Hanoi
                     b = Math.Sqrt(Math.Pow((p2.X - p3.X), 2) + Math.Pow((p2.Y - p3.Y), 2));
                     c = Math.Sqrt(Math.Pow((p3.X - p1.X), 2) + Math.Pow((p3.Y - p1.Y), 2));
 
+                    //1 mittlere
+                    //sqrt((P1x - P2x)2 + (P1y - P2y)2)
+                    //arccos((P122 + P132 - P232) / (2 * P12 * P13))
+
                     double angle = Math.Acos((Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2)) / (2 * a * b));
 
                     gestureAngles.Add(RadToDeg(angle));
@@ -386,10 +474,6 @@ namespace Hanoi
                
             }
             
-            //1 mittlere
-            //sqrt((P1x - P2x)2 + (P1y - P2y)2)
-            //arccos((P122 + P132 - P232) / (2 * P12 * P13))
-
             //Creating Templates in template1,2,3.xml here
             //MyClass.SerializeObject(gestureAngles, "template3.xml");
 
@@ -498,7 +582,7 @@ namespace Hanoi
 
             distanceSum = distanceSum * normalizerVal;
 
-            return (distanceSum);
+            return Math.Abs(distanceSum);
         }
 
 
@@ -543,6 +627,8 @@ namespace Hanoi
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
         {
+            setInputFeedback("Speech: " + e.Result.Text);
+
             switch (e.Result.Text)
             {
                 case "start game":
@@ -592,8 +678,11 @@ namespace Hanoi
         }
 
         #endregion
+
     }
 
+
+    #region XML Handling
     public static class MyClass
     {
         public static void SerializeObject(this List<double> list, string fileName)
@@ -619,5 +708,7 @@ namespace Hanoi
             }
         }
     }
+
+#endregion
 }
 
