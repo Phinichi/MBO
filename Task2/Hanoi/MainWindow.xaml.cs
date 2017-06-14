@@ -599,7 +599,8 @@ namespace Hanoi
 
         private void initializeSpeechRec()
         {
-            SpeechRecognizer sr = new SpeechRecognizer();
+            //SpeechRecognizer sr = new SpeechRecognizer();
+            SpeechRecognitionEngine sre = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("de-DE"));
 
             Choices commands = new Choices();
             commands.Add(new string[] {
@@ -620,9 +621,15 @@ namespace Hanoi
             // Create the Grammar instance.
             Grammar g = new Grammar(gb);
 
-            sr.LoadGrammar(g);
+            sre.LoadGrammar(g);
 
-            sr.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
+            sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
+
+            // Configure the input to the speech recognizer.
+            sre.SetInputToDefaultAudioDevice();
+
+            // Start asynchronous, continuous speech recognition.
+            sre.RecognizeAsync(RecognizeMode.Multiple);
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
