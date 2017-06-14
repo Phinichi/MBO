@@ -18,6 +18,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
 using System.Speech.Recognition;
+using System.Globalization;
 
 namespace Hanoi
 {
@@ -39,6 +40,8 @@ namespace Hanoi
         private CancellationTokenSource ts = null;
         private  CancellationToken ct;
 
+        private SpeechRecognitionEngine sre = new SpeechRecognitionEngine();
+
         private Canvas startCanvas = null;
 
         private bool inputGesture;
@@ -55,6 +58,10 @@ namespace Hanoi
         public MainWindow()
         {
             InitializeComponent();
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
+
             initializeTemplates();
             initializeGame();
             initializeSpeechRec();
@@ -162,6 +169,7 @@ namespace Hanoi
                 {
                     if (canvas.Children.Count > 0)
                         setStartCanvas(canvas);
+                    else MessageBox.Show(canvas.Name + " has no discs!");
                 }
                 else
                 {
@@ -417,6 +425,7 @@ namespace Hanoi
             int templateNumber = classifyGesture(gestureAngles);
 
             Canvas canvas = null;
+            Console.Write(templateNumber);
 
             switch (templateNumber)
             {
@@ -506,18 +515,16 @@ namespace Hanoi
             //DTW Distances
             //d(i,j) =... {}
 
-            for (int i = 0; i < gestureAngles.Count; i++)
+            for (int i = 0; i < distances.GetLength(0); i++)
             {
-                for (int j = 0; j < templateAngles.Count; j++)
+                for (int j = 0; j < distances.GetLength(1); j++)
 			    {
                     double angleDistance = 0;
 
-
-
                     if (Math.Abs(gestureAngles[i] - templateAngles[j]) < Math.PI) angleDistance = ((1 / Math.PI) * Math.Abs(gestureAngles[i] - templateAngles[j]));
                     else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - Math.Abs(gestureAngles[i] - templateAngles[j])));
-                     
-                    distances[i,j] = angleDistance;
+
+                    distances[i, j] = Math.Abs(angleDistance);
 
 			    }
             }
@@ -582,7 +589,7 @@ namespace Hanoi
 
             distanceSum = distanceSum * normalizerVal;
 
-            return Math.Abs(distanceSum);
+            return (distanceSum);
         }
 
 
@@ -600,19 +607,20 @@ namespace Hanoi
         private void initializeSpeechRec()
         {
             //SpeechRecognizer sr = new SpeechRecognizer();
-            SpeechRecognitionEngine sre = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("de-DE"));
+            //sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
+            sre.SpeechRecognized += onSpeechRecog;
+
+            sre.SpeechDetected += onSpeechDetection;
 
             Choices commands = new Choices();
             commands.Add(new string[] {
-                "move left to middle",
-                "move left to right",
-                "move middle to left",
-                "move middle to right",
-                "move right to left",
-                "move right to middle",
-                "start game",
-                "reset game",
-                "solve game"
+                "one",
+                "two",
+                "three",
+
+               // "start",
+                "reset",
+                "solve",
             });
 
             GrammarBuilder gb = new GrammarBuilder();
@@ -623,13 +631,24 @@ namespace Hanoi
 
             sre.LoadGrammar(g);
 
-            sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
+    
 
             // Configure the input to the speech recognizer.
             sre.SetInputToDefaultAudioDevice();
 
             // Start asynchronous, continuous speech recognition.
-            sre.RecognizeAsync(RecognizeMode.Multiple);
+            try
+            {
+                sre.RecognizeAsync(RecognizeMode.Multiple);
+            }
+            catch
+            {
+            }
+        }
+
+        private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
+        {
+            Console.WriteLine(e.AudioPosition.ToString());
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
@@ -638,39 +657,25 @@ namespace Hanoi
 
             switch (e.Result.Text)
             {
-                case "start game":
-                    startGame();
-                    break;
-                case "reset game":
+               // case "start":
+                //    startGame();
+               //     break;
+                case "reset":
                     resetGame();
                     break;
-                case "solve game":
+                case "solve":
                     solveGame();
                     break;
-                case "move left to middle":
-                    this.startCanvas = this.LeftCanvas;
-                    moveDisc(this.MidCanvas);
+                case "one":
+                    handleCanvasInput(LeftCanvas);
                     break;
-                case "move left to right":
-                    this.startCanvas = this.LeftCanvas;
-                    moveDisc(this.RightCanvas);
+                case "two":
+                    handleCanvasInput(MidCanvas);
                     break;
-                case "move middle to left":
-                    this.startCanvas = this.MidCanvas;
-                    moveDisc(this.LeftCanvas);
+                case "three":
+                    handleCanvasInput(RightCanvas);
                     break;
-                case "move middle to right":
-                    this.startCanvas = this.MidCanvas;
-                    moveDisc(this.LeftCanvas);
-                    break;
-                case "move right to left":
-                    this.startCanvas = this.RightCanvas;
-                    moveDisc(this.LeftCanvas);
-                    break;
-                case "move right to middle":
-                    this.startCanvas = this.RightCanvas;
-                    moveDisc(this.MidCanvas);
-                    break;
+              
                 default:
                     onNotRecoq();
                     break;
