@@ -17,6 +17,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using System.Speech;
 using System.Speech.Recognition;
 using System.Globalization;
 
@@ -40,7 +41,6 @@ namespace Hanoi
         private CancellationTokenSource ts = null;
         private  CancellationToken ct;
 
-        private SpeechRecognitionEngine sre = new SpeechRecognitionEngine();
 
         private Canvas startCanvas = null;
 
@@ -606,14 +606,22 @@ namespace Hanoi
 
         private void initializeSpeechRec()
         {
-            //SpeechRecognizer sr = new SpeechRecognizer();
-            //sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
-            sre.SpeechRecognized += onSpeechRecog;
 
-            sre.SpeechDetected += onSpeechDetection;
+            CultureInfo ci = new CultureInfo("en-US");
+            try
+            {
 
-            Choices commands = new Choices();
-            commands.Add(new string[] {
+                //NEEDS TO SWITCH TO en-US
+                SpeechRecognitionEngine sre = new SpeechRecognitionEngine(ci);
+
+                //SpeechRecognizer sr = new SpeechRecognizer();
+                //sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
+                sre.SpeechRecognized += onSpeechRecog;
+
+                sre.SpeechDetected += onSpeechDetection;
+
+                Choices commands = new Choices();
+                commands.Add(new string[] {
                 "one",
                 "two",
                 "three",
@@ -623,27 +631,33 @@ namespace Hanoi
                 "solve",
             });
 
-            GrammarBuilder gb = new GrammarBuilder();
-            gb.Append(commands);
+                GrammarBuilder gb = new GrammarBuilder();
+                gb.Append(commands);
 
-            // Create the Grammar instance.
-            Grammar g = new Grammar(gb);
+                // Create the Grammar instance.
+                Grammar g = new Grammar(gb);
 
-            sre.LoadGrammar(g);
+                sre.LoadGrammar(g);
 
-    
 
-            // Configure the input to the speech recognizer.
-            sre.SetInputToDefaultAudioDevice();
 
-            // Start asynchronous, continuous speech recognition.
-            try
-            {
-                sre.RecognizeAsync(RecognizeMode.Multiple);
+                // Configure the input to the speech recognizer.
+                sre.SetInputToDefaultAudioDevice();
+
+                // Start asynchronous, continuous speech recognition.
+                try
+                {
+                    sre.RecognizeAsync(RecognizeMode.Multiple);
+                }
+                catch
+                {
+                }
             }
-            catch
+            catch (Exception e)
             {
+
             }
+           
         }
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
