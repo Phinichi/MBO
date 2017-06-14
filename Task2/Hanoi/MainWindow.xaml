@@ -20,7 +20,7 @@
         <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="227,344,0,0" VerticalAlignment="Top" Grid.Row="2" Height="26" Width="100"/>
         <Button x:Name="ButtonReset" Content="Reset" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,342,537,4" Grid.Row="2" />
         <Button x:Name="ButtonSolve" Content="Solve" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,342,434,4" Grid.Row="2" />
-        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Green Canvas: &#xD;&#xA;Canvas is selected&#xD;&#xA;&#xD;&#xA;Gesture Inputs:&#xD;&#xA;hold right mouse&#xD;&#xA;button and draw&#xA;1, 2, or 3&#xA;Speech Inputs: say&#xA;&quot;One&quot;, &quot;Two&quot;,&quot;Three&quot;&#xA;&quot;Reset&quot;, or &quot;Solve&quot;" Margin="652,3,-136,228" Width="128" Grid.RowSpan="3" Height="183" RenderTransformOrigin="0.5,0.5" >
+        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Green Canvas: &#xA;Canvas is selected&#xA;&#xA;Gesture Inputs:&#xA;hold right mouse&#xA;button and draw&#xA;1, 2, or 3&#xD;&#xA;&#xA;Speech Inputs: say&#xA;&quot;eins&quot;, &quot;zwei&quot;,&quot;drei&quot;&#xA;&quot;reset&quot;, or &quot;löse&quot;" Margin="652,3,-136,228" Width="128" Grid.RowSpan="3" Height="183" RenderTransformOrigin="0.5,0.5" >
             <Label.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>

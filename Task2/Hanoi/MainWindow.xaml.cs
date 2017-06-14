@@ -61,7 +61,7 @@ namespace Hanoi
         {
             InitializeComponent();
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
 
             initializeTemplates();
@@ -468,13 +468,8 @@ namespace Hanoi
                     break;
             }
 
-            
-
+           
             handleCanvasInput(canvas);
-            //String gestureClass = classifyGesture(gestureAngles);
-
-            // Write angles List to xml for templating
-            //(new System.Xml.Serialization.XmlSerializer(gestureAngles.GetType())).Serialize(new System.IO.StreamWriter(@"\template.xml"), gestureAngles);
 
             gesturePositions.Clear();
         }
@@ -539,32 +534,38 @@ namespace Hanoi
 
 
             double[,] distances = new double[gestureAngles.Count, templateAngles.Count];
-
-            //DTW Distances
+             
+            //Local DistanceS
             //d(i,j) =... {}
 
             for (int i = 0; i < distances.GetLength(0); i++)
             {
+                double gestureAngle = DegToRad(gestureAngles[i]);
+
                 for (int j = 0; j < distances.GetLength(1); j++)
 			    {
                     double angleDistance = 0;
 
-                    if (Math.Abs(gestureAngles[i] - templateAngles[j]) < Math.PI) angleDistance = ((1 / Math.PI) * Math.Abs(gestureAngles[i] - templateAngles[j]));
-                    else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - Math.Abs(gestureAngles[i] - templateAngles[j])));
+                    
+                    double templateAngle = DegToRad(templateAngles[j]);
 
-                    distances[i, j] = Math.Abs(angleDistance);
+                    if (Math.Abs(gestureAngle - templateAngle) < Math.PI) angleDistance = ((1 / Math.PI) * Math.Abs(gestureAngle - templateAngle));
+                    else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - Math.Abs(gestureAngle - templateAngle)));
+
+                    distances[i, j] = angleDistance;
 
 			    }
             }
 
-            //Local Distances 
+            //DTW Distance
             //C(i, j) = min(C(i, j -1),2×C(i -1, j -1),C(i -1, j))+ d(i, j)
 
             double[,] localDistances = new double[gestureAngles.Count, templateAngles.Count];
+            double localDistance = 0;
 
-            for (int i = 0; i < localDistances.GetLength(0); i++)
+            for (int i = 0; i < distances.GetLength(0); i++)
             {
-                for (int j = 0; j < localDistances.GetLength(1); j++)
+                for (int j = 0; j < distances.GetLength(1); j++)
                 {
                     double[] localMinimums = new double[3];
 
@@ -576,24 +577,26 @@ namespace Hanoi
                     else if (j == 0 && i != 0){
                         localMinimums[0] = 0;
                         localMinimums[1] = 0;
-                        localMinimums[2] = localDistances[i - 1, j];
+                        localMinimums[2] = distances[i - 1, j];
                     }
                     else if (i == 0 && j != 0)
                     {
-                        localMinimums[0] = localDistances[i, j - 1];
+                        localMinimums[0] = distances[i, j - 1];
                         localMinimums[1] = 0;
                         localMinimums[2] = 0;
                     }
                     else
                     {
-                        localMinimums[0] = localDistances[i, j - 1];
-                        localMinimums[1] = 2 * localDistances[i - 1, j - 1];
-                        localMinimums[2] = localDistances[i - 1, j];
+                        localMinimums[0] = distances[i, j - 1];
+                        localMinimums[1] = 2 * distances[i - 1, j - 1];
+                        localMinimums[2] = distances[i - 1, j];
 
                     }
 
                         double localMinimum = Math.Min((Math.Min(localMinimums[0], localMinimums[1])), localMinimums[2]);
                         localDistances[i, j] = localMinimum + distances[i, j];
+
+                        localDistance = localMinimum + distances[i, j];
                     
 
                 }
@@ -611,13 +614,13 @@ namespace Hanoi
             {
                 for (int j = 0; j < localDistances.GetLength(1); j++)
                 {
-                    distanceSum = distanceSum + localDistances[i, j];
+                 distanceSum = distanceSum + localDistances[i, j];
                 }
             }
 
             distanceSum = distanceSum * normalizerVal;
 
-            return (distanceSum);
+            return (localDistance * normalizerVal);
         }
 
 
@@ -626,6 +629,14 @@ namespace Hanoi
         private double RadToDeg(double rad)
         {
             return rad * (180.0 / Math.PI);
+        }
+
+        private double DegToRad(double deg)
+        {
+
+            //deg = rad* (180/Math.Pi)
+
+            return ( deg / (180.0 / Math.PI));
         }
 
         #endregion
@@ -648,13 +659,13 @@ namespace Hanoi
 
                 Choices commands = new Choices();
                 commands.Add(new string[] {
-                "one",
-                "two",
-                "three",
+                "eins",
+                "zwei",
+                "drei",
 
                // "start",
                 "reset",
-                "solve",
+                "löse",
             });
 
                 GrammarBuilder gb = new GrammarBuilder();
@@ -678,7 +689,7 @@ namespace Hanoi
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
-            setMessageBox("Speech input not recognized!");
+            //setMessageBox("Speech input not recognized!");
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
@@ -694,16 +705,16 @@ namespace Hanoi
                     setMessageBox("You reseted the game.");
                     resetGame();
                     break;
-                case "solve":
+                case "löse":
                     solveGame();
                     break;
-                case "one":
+                case "eins":
                     handleCanvasInput(Canvas1);
                     break;
-                case "two":
+                case "zwei":
                     handleCanvasInput(Canvas2);
                     break;
-                case "three":
+                case "drei":
                     handleCanvasInput(Canvas3);
                     break;
               
