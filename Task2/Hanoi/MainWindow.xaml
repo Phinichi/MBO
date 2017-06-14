@@ -1,28 +1,42 @@
 ﻿<Window x:Class="Hanoi.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Türme von Hanoi" Height="444" Width="798.776" MouseMove="Window_MouseMove"  MouseRightButtonUp="Window_MouseRightButtonUp" MouseRightButtonDown="Window_MouseRightButtonDown">
+        Title="Türme von Hanoi" Height="459" Width="798.776" MouseMove="Window_MouseMove"  MouseRightButtonUp="Window_MouseRightButtonUp" MouseRightButtonDown="Window_MouseRightButtonDown">
     <Window.Background>
         <SolidColorBrush Color="White" />
     </Window.Background>
 
     <Grid HorizontalAlignment="Left" Width="644" x:Name="hanoiGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="21*"/>
-            <RowDefinition Height="50*"/>
-            <RowDefinition Height="343*"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="121*"/>
         </Grid.RowDefinitions>
-        <Label Name="Titel" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Content="Türme von Hanoi" Margin="268,10,258,32" Grid.RowSpan="2" />
-        <Canvas x:Name="LeftCanvas" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom" Margin="10,0,440,60" Height="300" Width="200" Grid.Row="1" Grid.RowSpan="2"/>
-        <Canvas x:Name="MidCanvas" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="222,0,228,60" Height="300" Width="200" Grid.Row="1" Grid.RowSpan="2"/>
-        <Canvas x:Name="RightCanvas" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="429,0,10,60" Height="300" Width="200" Grid.Row="1" Grid.RowSpan="2"/>
-        <Slider HorizontalAlignment="Left" Margin="327,302,0,0" VerticalAlignment="Top" Width="126" Minimum="3" Value ="3" ValueChanged="Slider_ValueChanged" Thumb.DragCompleted="Slider_DragCompleted" SmallChange="1" Cursor="" Grid.Row="2" AutoToolTipPlacement="TopLeft" TickPlacement="TopLeft"/>
-        <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="222,298,0,0" VerticalAlignment="Top" Grid.Row="2"/>
-        <Button x:Name="ButtonReset" Content="Reset" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,287,537,10" Grid.Row="2" />
-        <Button x:Name="ButtonSolve" Content="Solve" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,288,434,9" Grid.Row="2" />
-        <Label Name="LastInput" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Last Input:" Margin="686,3,-120,22" Width="78" Grid.Row="1" />
-        <Label Name="InputFeedbackOld" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" Margin="652,6,-136,0" Grid.Row="2" RenderTransformOrigin="5.026,0.594" Height="219" Width="128" />
-        <Label Name="InputFeedbackNew" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" Margin="652,33,-136,337" Grid.Row="1" RenderTransformOrigin="5.026,0.594" Height="23" Width="128" Grid.RowSpan="2" />
+        <Label Name="Titel" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Content="Türme von Hanoi" Margin="268,-2,243,23" Grid.RowSpan="2" Height="30" Width="133" />
+        <Canvas x:Name="Canvas1" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom" Margin="10,0,434,73" Height="300" Width="200" Grid.Row="2"/>
+        <Canvas x:Name="Canvas2" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="222,0,222,73" Height="300" Width="200" Grid.Row="2"/>
+        <Canvas x:Name="Canvas3" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="434,0,10,73" Height="300" Width="200" Grid.Row="2"/>
+        <Slider x:Name="DiscAmountSlider" HorizontalAlignment="Left" Margin="327,348,0,0" VerticalAlignment="Top" Width="126" Minimum="3" Value ="3" ValueChanged="Slider_ValueChanged" Thumb.DragCompleted="Slider_DragCompleted" SmallChange="1" Cursor="" Grid.Row="2" AutoToolTipPlacement="TopLeft" TickPlacement="TopLeft" Height="22"/>
+        <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="227,344,0,0" VerticalAlignment="Top" Grid.Row="2" Height="26" Width="100"/>
+        <Button x:Name="ButtonReset" Content="Reset" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,342,537,4" Grid.Row="2" />
+        <Button x:Name="ButtonSolve" Content="Solve" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,342,434,4" Grid.Row="2" />
+        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Green Canvas: &#xD;&#xA;Canvas is selected&#xD;&#xA;&#xD;&#xA;Gesture Inputs:&#xD;&#xA;hold right mouse&#xD;&#xA;button and draw&#xA;1, 2, or 3&#xA;Speech Inputs: say&#xA;&quot;One&quot;, &quot;Two&quot;,&quot;Three&quot;&#xA;&quot;Reset&quot;, or &quot;Solve&quot;" Margin="652,3,-136,228" Width="128" Grid.RowSpan="3" Height="183" RenderTransformOrigin="0.5,0.5" >
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.477"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0.492"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Label Name="LastInput" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Last Input:" Margin="686,139,-120,200" Width="78" Grid.Row="2" Height="24" />
+        <Label Name="CanvasNumbers" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas 1" Margin="10,4,434,2" Width="200" Grid.Row="1" Height="24"/>
+        <Label Name="InputFeedbackOld" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" Margin="652,191,-136,0" Grid.Row="2" RenderTransformOrigin="5.026,0.594" Height="143" Width="128" />
+        <Label Name="InputFeedbackNew" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" Margin="652,163,-136,0" Grid.Row="2" RenderTransformOrigin="5.026,0.594" Height="23" Width="128" />
+        <Label x:Name="CanvasNumbers_Copy" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas 2" Margin="222,4,222,2" Width="200" Grid.Row="1" Height="24" />
+        <Label x:Name="CanvasNumbers_Copy1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas 3" Margin="432,4,12,2" Width="200" Grid.Row="1" Height="24" />
+        <Label x:Name="Messages" HorizontalAlignment="Center" VerticalAlignment="Center" Content="" Margin="10,310,12,42" Width="622" Grid.Row="2" Height="24"/>
     </Grid>
 
 

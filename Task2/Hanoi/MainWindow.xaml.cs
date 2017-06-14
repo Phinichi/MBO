@@ -20,6 +20,7 @@ using System.Xml;
 using System.Speech;
 using System.Speech.Recognition;
 using System.Globalization;
+using System.Drawing;
 
 namespace Hanoi
 {
@@ -31,11 +32,12 @@ namespace Hanoi
 
         #region Global Parameters
 
+        private bool discAmountChanged = false;
         private double canvasBottomMargin = 0;
         private double rectangleHeight = 0;
         private double rectangleStartWidth = 0;
         private int discAmount = 0;
-        private int inputFeedbackOldRows = 0;
+        private int inputFeedbackRows = 0;
 
         private System.Threading.Tasks.Task t = null;
         private CancellationTokenSource ts = null;
@@ -82,6 +84,7 @@ namespace Hanoi
             resetGame();
         }
 
+
         private void initializeTemplates()
         {
             templateOne = new List<double>();
@@ -107,7 +110,9 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Reset_Click(object sender, RoutedEventArgs e)
         {
-            setInputFeedback("Game reset");
+            setInputFeedback("Button: Reset");
+            setMessageBox("You reseted the game.");
+
             resetGame();
         }
 
@@ -119,7 +124,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Solve_Click(object sender, RoutedEventArgs e)
         {
-            setInputFeedback("Automatic Solving");
+            setInputFeedback("Button: Solve");
             solveGame();           
         }
 
@@ -130,15 +135,28 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedPropertyChangedEventArgs{System.Double}"/> instance containing the event data.</param>
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            this.discAmount = (int) e.NewValue;
+            int newDiscAmount = (int) e.NewValue;
 
-            resetGame();
+            if(this.discAmount != newDiscAmount){
+
+                this.discAmount = newDiscAmount;
+                discAmountChanged = true;
+                resetGame();
+            }       
         }
 
         private void Slider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
 
-            if (discAmount != null && discAmount > 0) setInputFeedback("Disc Amount: " + discAmount);
+            if (discAmount > 0)
+            {
+                if (discAmountChanged)
+                {
+                    setInputFeedback("Disc Amount: " + discAmount);
+                    setMessageBox("You changed the disc amount to " + discAmount + ".");
+                    discAmountChanged = false;
+                }              
+            }
         }
                       
 
@@ -151,7 +169,7 @@ namespace Hanoi
         {
             Canvas sentCanvas = sender as Canvas;
 
-            setInputFeedback("Canvas Click: " + sentCanvas.Name);
+            setInputFeedback("Click: " + sentCanvas.Name);
 
             handleCanvasInput(sentCanvas);
           
@@ -169,7 +187,10 @@ namespace Hanoi
                 {
                     if (canvas.Children.Count > 0)
                         setStartCanvas(canvas);
-                    else MessageBox.Show(canvas.Name + " has no discs!");
+                    else
+                    {
+                        setMessageBox(canvas.Name + " has no discs!");
+                    }
                 }
                 else
                 {
@@ -203,19 +224,25 @@ namespace Hanoi
 
         #endregion
 
-        #region Feedback Handling
+        #region InfoFeedback Handling
 
         private void setInputFeedback(string lastInput){
             if (lastInput != null)
             {
-                InputFeedbackOld.Content = InputFeedbackOld.Content + "\n" + InputFeedbackNew.Content;
-                inputFeedbackOldRows = inputFeedbackOldRows + 1;
+                InputFeedbackOld.Content = InputFeedbackNew.Content + "\n" + InputFeedbackOld.Content;
+                inputFeedbackRows = inputFeedbackRows + 1;
 
 
-                InputFeedbackNew.Content = lastInput;
+                InputFeedbackNew.Content = "[" + inputFeedbackRows + "] " + lastInput;
                 
             }
             
+        }
+
+        private void setMessageBox(string text)
+        {
+            Messages.Content = text;
+            //Messages.ForeColor = color;
         }
 
         #endregion
@@ -229,14 +256,14 @@ namespace Hanoi
         {
             double width = rectangleStartWidth;
 
-            double top = LeftCanvas.Height - rectangleHeight - canvasBottomMargin;
+            double top = Canvas1.Height - rectangleHeight - canvasBottomMargin;
 
             for (double x = 0; x < this.discAmount; x++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Height = rectangleHeight;
                 rect.Width = width;
-                double left = LeftCanvas.Width * 0.5 - width * 0.5;
+                double left = Canvas1.Width * 0.5 - width * 0.5;
                 width = width * 0.85;
                 rect.Fill = new SolidColorBrush(Colors.Black);
                 rect.Name = "disc"+ ((discAmount - x)).ToString();
@@ -245,7 +272,7 @@ namespace Hanoi
                 Canvas.SetTop(rect, top);
                 top = top - rect.Height;
 
-                LeftCanvas.Children.Add(rect);
+                Canvas1.Children.Add(rect);
             }
 
             Console.WriteLine("\n Start Game with " + discAmount + " discs.");
@@ -265,9 +292,9 @@ namespace Hanoi
                 t = null;
             }
 
-                LeftCanvas.Children.Clear();
-                MidCanvas.Children.Clear();
-                RightCanvas.Children.Clear();
+                Canvas1.Children.Clear();
+                Canvas2.Children.Clear();
+                Canvas3.Children.Clear();
                 this.startCanvas = null;
 
                 inputGesture = false;
@@ -276,21 +303,21 @@ namespace Hanoi
 
         private void solveGame()
         {
-            if (MidCanvas.Children.Count == 0 && RightCanvas.Children.Count == 0 && t == null)
+            if (Canvas2.Children.Count == 0 && Canvas3.Children.Count == 0 && t == null)
             {
                 ts = new CancellationTokenSource();
                 ct = ts.Token;
 
                 t = new System.Threading.Tasks.Task(() =>
                 {
-                    solveAlgorithm(discAmount, LeftCanvas, RightCanvas, MidCanvas);
+                    solveAlgorithm(discAmount, Canvas1, Canvas3, Canvas2);
                 }, ct);
 
                 t.Start();
             }
             else
             {
-                MessageBox.Show("Reset the Game first!");
+                setMessageBox("Reset the Game first!");
             }
         }
 
@@ -321,11 +348,11 @@ namespace Hanoi
 
                         if (startRect.Width < nachRect.Width)
                         {
-                            rectTop = rectTop - (targetCanvas.Children.Count * rectangleHeight);
+                            rectTop = rectTop - (targetCanvas.Children.Count * rectangleHeight);  
                         }
                         else
                         {
-                            MessageBox.Show("Kein gültiger Zug!");
+                            setMessageBox("No valid move!");
                             return;
                         }
 
@@ -334,10 +361,11 @@ namespace Hanoi
                     this.startCanvas.Children.Remove(startRect);
                     Canvas.SetTop(startRect, rectTop);
                     targetCanvas.Children.Add(startRect);
+                    setMessageBox("Moved Disc from Canvas " + this.startCanvas.Name + " to " + targetCanvas.Name + ".");
 
-                    if (RightCanvas.Children.Count == this.discAmount)
+                    if (Canvas3.Children.Count == this.discAmount)
                     {
-                        MessageBox.Show("Juhu, du hast gewonnen!");
+                        setMessageBox("You won the game!");
                     }
                 }
             }
@@ -429,13 +457,13 @@ namespace Hanoi
 
             switch (templateNumber)
             {
-                case 1: canvas = LeftCanvas; 
+                case 1: canvas = Canvas1; 
                     setInputFeedback("Gesture: 1");
                     break;
-                case 2: canvas = MidCanvas; 
+                case 2: canvas = Canvas2; 
                     setInputFeedback("Gesture: 2");
                     break;
-                case 3: canvas = RightCanvas; 
+                case 3: canvas = Canvas3; 
                     setInputFeedback("Gesture: 3");
                     break;
             }
@@ -607,10 +635,8 @@ namespace Hanoi
         private void initializeSpeechRec()
         {
 
-            CultureInfo ci = new CultureInfo("en-US");
-            try
-            {
-
+            CultureInfo ci = new CultureInfo("de-DE");
+ 
                 //NEEDS TO SWITCH TO en-US
                 SpeechRecognitionEngine sre = new SpeechRecognitionEngine(ci);
 
@@ -645,24 +671,14 @@ namespace Hanoi
                 sre.SetInputToDefaultAudioDevice();
 
                 // Start asynchronous, continuous speech recognition.
-                try
-                {
-                    sre.RecognizeAsync(RecognizeMode.Multiple);
-                }
-                catch
-                {
-                }
-            }
-            catch (Exception e)
-            {
+                sre.RecognizeAsync(RecognizeMode.Multiple);
 
-            }
            
         }
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
-            Console.WriteLine(e.AudioPosition.ToString());
+            setMessageBox("Speech input not recognized!");
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
@@ -675,19 +691,20 @@ namespace Hanoi
                 //    startGame();
                //     break;
                 case "reset":
+                    setMessageBox("You reseted the game.");
                     resetGame();
                     break;
                 case "solve":
                     solveGame();
                     break;
                 case "one":
-                    handleCanvasInput(LeftCanvas);
+                    handleCanvasInput(Canvas1);
                     break;
                 case "two":
-                    handleCanvasInput(MidCanvas);
+                    handleCanvasInput(Canvas2);
                     break;
                 case "three":
-                    handleCanvasInput(RightCanvas);
+                    handleCanvasInput(Canvas3);
                     break;
               
                 default:
@@ -701,6 +718,7 @@ namespace Hanoi
             System.Speech.Synthesis.SpeechSynthesizer synthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
 
             synthesizer.Speak("Sorry, I did not understand you.");
+            setMessageBox("Speech input not recognized!");
         }
 
         #endregion
