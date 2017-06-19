@@ -43,15 +43,18 @@ namespace Hanoi
         private CancellationTokenSource ts = null;
         private  CancellationToken ct;
 
-
         private Canvas startCanvas = null;
 
         private bool inputGesture;
         private List<Point> gesturePositions;
 
-        private List<double> templateOne;
-        private List<double> templateTwo;
-        private List<double> templateThree;
+        private Gestures gesture = null;
+
+        private Speech speech = null;
+
+        private Feedback feedback = null;
+
+        private MultiInput multi = null;
 
         #endregion
 
@@ -60,13 +63,14 @@ namespace Hanoi
         public MainWindow()
         {
             InitializeComponent();
+            feedback = new Feedback(Messages, InputFeedbackOld, InputFeedbackNew);
+            gesture = new Gestures();
+            speech = new Speech(feedback);
+            speech.SpeechFeedback += onSpeechFeedbackReceived;
 
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
-
-            initializeTemplates();
             initializeGame();
-            initializeSpeechRec();
         }
 
         /// <summary>
@@ -85,18 +89,7 @@ namespace Hanoi
         }
 
 
-        private void initializeTemplates()
-        {
-            templateOne = new List<double>();
-            templateTwo = new List<double>();
-            templateThree = new List<double>();
-
-            MyClass.Deserialize(templateOne, @"../../template1.xml");
-
-            MyClass.Deserialize(templateTwo, @"../../template2.xml");
-
-            MyClass.Deserialize(templateThree, @"../../template3.xml");      
-        }
+       
 
         #endregion
 
@@ -110,10 +103,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Reset_Click(object sender, RoutedEventArgs e)
         {
-            setInputFeedback("Button: Reset");
-            setMessageBox("You reseted the game.");
-
-            resetGame();
+            handleResultFunction(FunctionType.Reset, InputType.Click);
         }
 
 
@@ -124,8 +114,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Solve_Click(object sender, RoutedEventArgs e)
         {
-            setInputFeedback("Button: Solve");
-            solveGame();           
+            handleResultFunction(FunctionType.Solve, InputType.Click);          
         }
 
         /// <summary>
@@ -152,8 +141,8 @@ namespace Hanoi
             {
                 if (discAmountChanged)
                 {
-                    setInputFeedback("Disc Amount: " + discAmount);
-                    setMessageBox("You changed the disc amount to " + discAmount + ".");
+                    feedback.setInputFeedback("Disc Amount: " + discAmount);
+                    feedback.setMessageBox("You changed the disc amount to " + discAmount + ".");
                     discAmountChanged = false;
                 }              
             }
@@ -169,10 +158,19 @@ namespace Hanoi
         {
             Canvas sentCanvas = sender as Canvas;
 
-            setInputFeedback("Click: " + sentCanvas.Name);
-
-            handleCanvasInput(sentCanvas);
-          
+            switch (sentCanvas.Name)
+            {
+                case "Canvas1":
+                    handleResultFunction(FunctionType.Canvas1, InputType.Click);
+                    break;
+                case "Canvas2":
+                    handleResultFunction(FunctionType.Canvas2, InputType.Click);
+                    break;
+                case "Canvas3":
+                    handleResultFunction(FunctionType.Canvas3, InputType.Click);
+                    break;
+                default: break;
+            }       
         }
 
         #endregion
@@ -189,7 +187,7 @@ namespace Hanoi
                         setStartCanvas(canvas);
                     else
                     {
-                        setMessageBox(canvas.Name + " has no discs!");
+                        feedback.setMessageBox(canvas.Name + " has no discs!");
                     }
                 }
                 else
@@ -224,28 +222,7 @@ namespace Hanoi
 
         #endregion
 
-        #region InfoFeedback Handling
-
-        private void setInputFeedback(string lastInput){
-            if (lastInput != null)
-            {
-                InputFeedbackOld.Content = InputFeedbackNew.Content + "\n" + InputFeedbackOld.Content;
-                inputFeedbackRows = inputFeedbackRows + 1;
-
-
-                InputFeedbackNew.Content = "[" + inputFeedbackRows + "] " + lastInput;
-                
-            }
-            
-        }
-
-        private void setMessageBox(string text)
-        {
-            Messages.Content = text;
-            //Messages.ForeColor = color;
-        }
-
-        #endregion
+      
 
         #region Game Handling
 
@@ -317,7 +294,7 @@ namespace Hanoi
             }
             else
             {
-                setMessageBox("Reset the Game first!");
+                feedback.setMessageBox("Reset the Game first!");
             }
         }
 
@@ -352,7 +329,7 @@ namespace Hanoi
                         }
                         else
                         {
-                            setMessageBox("No valid move!");
+                            feedback.setMessageBox("No valid move!");
                             return;
                         }
 
@@ -361,11 +338,11 @@ namespace Hanoi
                     this.startCanvas.Children.Remove(startRect);
                     Canvas.SetTop(startRect, rectTop);
                     targetCanvas.Children.Add(startRect);
-                    setMessageBox("Moved Disc from Canvas " + this.startCanvas.Name + " to " + targetCanvas.Name + ".");
+                    feedback.setMessageBox("Moved Disc from Canvas " + this.startCanvas.Name + " to " + targetCanvas.Name + ".");
 
                     if (Canvas3.Children.Count == this.discAmount)
                     {
-                        setMessageBox("You won the game!");
+                        feedback.setMessageBox("You won the game!");
                     }
                 }
             }
@@ -424,7 +401,6 @@ namespace Hanoi
 
         #endregion
 
-        #region Gesture Handling
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
 
@@ -446,271 +422,102 @@ namespace Hanoi
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-
             inputGesture = false;
-            List<double> gestureAngles = calculateAngles();
 
-            int templateNumber = classifyGesture(gestureAngles);
-
-            Canvas canvas = null;
-            Console.Write(templateNumber);
-
+            int templateNumber = gesture.GetTemplateNumber(gesturePositions);
+        
             switch (templateNumber)
             {
-                case 1: canvas = Canvas1; 
-                    setInputFeedback("Gesture: 1");
+                case 1:
+                    handleResultFunction(FunctionType.Canvas1, InputType.Gesture);
                     break;
-                case 2: canvas = Canvas2; 
-                    setInputFeedback("Gesture: 2");
+                case 2:
+                    handleResultFunction(FunctionType.Canvas2, InputType.Gesture);
                     break;
-                case 3: canvas = Canvas3; 
-                    setInputFeedback("Gesture: 3");
+                case 3:
+                    handleResultFunction(FunctionType.Canvas3, InputType.Gesture);
                     break;
             }
-
-           
-            handleCanvasInput(canvas);
 
             gesturePositions.Clear();
         }
 
-        private List<double> calculateAngles()
+        private void handleResultFunction(FunctionType functionType = FunctionType.None, InputType inputType = InputType.None)
         {
-            List<double> gestureAngles = new List<double>();
-
-            for (int i = 0; i < gesturePositions.Count - 1; i++)
+            if (multi != null)
             {
-                if (i > 1)
+
+                //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
+
+            }
+            else
+            {
+                if (inputType != InputType.None)
                 {
-                    // A
-                    Point p1 = gesturePositions[0];
-                    // B (Mitte)
-                    Point p2 = gesturePositions[i];
-                    // C
-                    Point p3 = gesturePositions[i + 1];
+                    string feedbackInputType = "";
 
-                    double a, b, c;
-                    // Anliegend an Mitte: a und b
-                    a = Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2));
-                    b = Math.Sqrt(Math.Pow((p2.X - p3.X), 2) + Math.Pow((p2.Y - p3.Y), 2));
-                    c = Math.Sqrt(Math.Pow((p3.X - p1.X), 2) + Math.Pow((p3.Y - p1.Y), 2));
+                    switch (inputType)
+                    {
+                        case InputType.Speech:
+                            feedbackInputType = "Speech: ";
+                            break;
+                        case InputType.Click:
+                            feedbackInputType = "Click: ";
+                            break;
+                        case InputType.Gesture:
+                            feedbackInputType = "Gesture: ";
+                            break;
+                        default: break;
+                    }
 
-                    //1 mittlere
-                    //sqrt((P1x - P2x)2 + (P1y - P2y)2)
-                    //arccos((P122 + P132 - P232) / (2 * P12 * P13))
-
-                    double angle = Math.Acos((Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2)) / (2 * a * b));
-
-                    gestureAngles.Add(RadToDeg(angle));
+                    feedback.setInputFeedback(feedbackInputType + functionType.ToString());
                 }
-               
-            }
-            
-            //Creating Templates in template1,2,3.xml here
-            //MyClass.SerializeObject(gestureAngles, "template2.xml");
-
-            return gestureAngles;
-        }
-
-      
-
-        private int classifyGesture(List<double> gestureAngles)
-        {
-
-            double localDistanceToTemplate1 = calculateLocalDistance(gestureAngles, templateOne);
-            double localDistanceToTemplate2 = calculateLocalDistance(gestureAngles, templateTwo);
-            double localDistanceToTemplate3 = calculateLocalDistance(gestureAngles, templateThree);
-
-            int i = 0;
-            if (localDistanceToTemplate1 < localDistanceToTemplate2 && localDistanceToTemplate1 < localDistanceToTemplate3) i = 1;
-            else if (localDistanceToTemplate2 < localDistanceToTemplate1 && localDistanceToTemplate2 < localDistanceToTemplate3) i = 2;
-            else i = 3;
-
-            return i;
-        }
-
-        private double calculateLocalDistance(List<double> gestureAngles, List<double> templateAngles)
-        {
 
 
-            double[,] distances = new double[gestureAngles.Count, templateAngles.Count];
-             
-            //Local DistanceS
-            //d(i,j) =... {}
-
-            for (int i = 0; i < distances.GetLength(0); i++)
-            {
-                double gestureAngle = DegToRad(gestureAngles[i]);
-
-                for (int j = 0; j < distances.GetLength(1); j++)
-			    {
-                    double angleDistance = 0;
-
-                    
-                    double templateAngle = DegToRad(templateAngles[j]);
-
-                    if (Math.Abs(gestureAngle - templateAngle) < Math.PI) angleDistance = ((1 / Math.PI) * Math.Abs(gestureAngle - templateAngle));
-                    else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - Math.Abs(gestureAngle - templateAngle)));
-
-                    distances[i, j] = angleDistance;
-
-			    }
-            }
-
-            //DTW Distance
-            //C(i, j) = min(C(i, j -1),2×C(i -1, j -1),C(i -1, j))+ d(i, j)
-
-            double[,] localDistances = new double[gestureAngles.Count, templateAngles.Count];
-
-
-            localDistances[0, 0] = distances[0, 0];
-
-            for (int i = 1; i < distances.GetLength(0); i++)
-            {
-                localDistances[i, 0] = distances[i, 0] + localDistances[i-1, 0];
-            }
-
-            for (int i = 1; i < distances.GetLength(1); i++)
-            {
-                localDistances[0, i] = distances[0, i] + localDistances[0, i-1];
-            }
-
-            for (int i = 1; i < localDistances.GetLength(0); i++)
-            {
-                for (int j = 1; j < localDistances.GetLength(1); j++)
+                if (functionType != FunctionType.None)
                 {
-                    double[] localMinimums = new double[3];
+                    switch (functionType)
+                    {
+                        case FunctionType.Put:
+                            feedback.setMessageBox("Combined Input: PUT - ");
+                            multi = new MultiInput(functionType);
 
-
-                        localMinimums[0] = localDistances[i, j - 1];
-                        localMinimums[1] = 2 * localDistances[i - 1, j - 1];
-                        localMinimums[2] = localDistances[i - 1, j];
-
-                        double localMinimum = Math.Min((Math.Min(localMinimums[0], localMinimums[1])), localMinimums[2]);
-                        localDistances[i, j] = localMinimum + distances[i, j];
-                   
+                            break;
+                        case FunctionType.Reset:
+                            feedback.setMessageBox("Your reseted the Game!");
+                            resetGame();
+                            break;
+                        case FunctionType.Solve:
+                            solveGame();
+                            break;
+                        case FunctionType.Canvas1:
+                            handleCanvasInput(Canvas1);
+                            break;
+                        case FunctionType.Canvas2:
+                            handleCanvasInput(Canvas2);
+                            break;
+                        case FunctionType.Canvas3:
+                            handleCanvasInput(Canvas3);
+                            break;
+                        case FunctionType.Close:
+                            break;
+                        default: break;
+                    }
                 }
-                
+          
             }
-
-            //Normalizing
-            //C(i,j)* 1/N+M
-
-            double normalizerVal = (1.0 / ((double) (localDistances.GetLength(0) + localDistances.GetLength(1))));
-
-            double distanceSum = localDistances[localDistances.GetLength(0)-1, localDistances.GetLength(1)-1] * normalizerVal;
-
-
-            return distanceSum;
         }
-
-
-
-        // Transform Radiant value to Degree
-        private double RadToDeg(double rad)
-        {
-            return rad * (180.0 / Math.PI);
-        }
-
-        private double DegToRad(double deg)
-        {
-
-            //deg = rad* (180/Math.Pi)
-
-            return ( deg / (180.0 / Math.PI));
-        }
-
-        #endregion
+     
 
         #region Speech Handling
 
-        private void initializeSpeechRec()
+        private void onSpeechFeedbackReceived(object sender, SpeechEventArgs e)
         {
-
-            CultureInfo ci = new CultureInfo("de-DE");
- 
-                //NEEDS TO SWITCH TO en-US
-                SpeechRecognitionEngine sre = new SpeechRecognitionEngine(ci);
-
-                //SpeechRecognizer sr = new SpeechRecognizer();
-                //sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);
-                sre.SpeechRecognized += onSpeechRecog;
-
-                sre.SpeechDetected += onSpeechDetection;
-
-                Choices commands = new Choices();
-                commands.Add(new string[] {
-                "eins",
-                "zwei",
-                "drei",
-
-               // "start",
-                "reset",
-                "löse",
-            });
-
-                GrammarBuilder gb = new GrammarBuilder();
-                gb.Append(commands);
-
-                // Create the Grammar instance.
-                Grammar g = new Grammar(gb);
-
-                sre.LoadGrammar(g);
-
-
-
-                // Configure the input to the speech recognizer.
-                sre.SetInputToDefaultAudioDevice();
-
-                // Start asynchronous, continuous speech recognition.
-                sre.RecognizeAsync(RecognizeMode.Multiple);
-
-           
-        }
-
-        private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
-        {
-            //setMessageBox("Speech input not recognized!");
-        }
-
-        private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
-        {
-            setInputFeedback("Speech: " + e.Result.Text);
-
-            switch (e.Result.Text)
+            if (e != null && e.resultFunction != null && !e.resultFunction.Equals(""))
             {
-               // case "start":
-                //    startGame();
-               //     break;
-                case "reset":
-                    setMessageBox("You reseted the game.");
-                    resetGame();
-                    break;
-                case "löse":
-                    solveGame();
-                    break;
-                case "eins":
-                    handleCanvasInput(Canvas1);
-                    break;
-                case "zwei":
-                    handleCanvasInput(Canvas2);
-                    break;
-                case "drei":
-                    handleCanvasInput(Canvas3);
-                    break;
-              
-                default:
-                    onNotRecoq();
-                    break;
+
+                handleResultFunction(e.resultFunction, InputType.Speech);
             }
-        }
-
-        private void onNotRecoq()
-        {
-            System.Speech.Synthesis.SpeechSynthesizer synthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
-
-            synthesizer.Speak("Sorry, I did not understand you.");
-            setMessageBox("Speech input not recognized!");
         }
 
         #endregion
@@ -718,33 +525,14 @@ namespace Hanoi
     }
 
 
-    #region XML Handling
-    public static class MyClass
+    public enum FunctionType
     {
-        public static void SerializeObject(this List<double> list, string fileName)
-        {
-            var serializer = new XmlSerializer(typeof(List<double>));
-            using (var stream = File.OpenWrite(fileName))
-            {
-                serializer.Serialize(stream, list);
-               
-            }
-            
-        }
-
-        public static void Deserialize(this List<double> list, string fileName)
-        {
-            var serializer = new XmlSerializer(typeof(List<double>));
-            using (var stream = File.OpenRead(fileName))
-            {
-                var other = (List<double>)(serializer.Deserialize(stream));
-                list.Clear();
-                list.AddRange(other);
-
-            }
-        }
+        None, Reset, Solve, Canvas1, Canvas2, Canvas3, DiscAmount, Feedback, Close, Put
     }
 
-#endregion
+    public enum InputType
+    {
+        None, Click, Gesture, Speech, Multi
+    }
 }
 
