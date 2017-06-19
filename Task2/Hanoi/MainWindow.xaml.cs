@@ -37,7 +37,6 @@ namespace Hanoi
         private double rectangleHeight = 0;
         private double rectangleStartWidth = 0;
         private int discAmount = 0;
-        private int inputFeedbackRows = 0;
 
         private System.Threading.Tasks.Task t = null;
         private CancellationTokenSource ts = null;
@@ -49,11 +48,8 @@ namespace Hanoi
         private List<Point> gesturePositions;
 
         private Gestures gesture = null;
-
         private Speech speech = null;
-
         private Feedback feedback = null;
-
         private MultiInput multi = null;
 
         #endregion
@@ -63,6 +59,7 @@ namespace Hanoi
         public MainWindow()
         {
             InitializeComponent();
+
             feedback = new Feedback(Messages, InputFeedbackOld, InputFeedbackNew);
             gesture = new Gestures();
             speech = new Speech(feedback);
@@ -88,9 +85,6 @@ namespace Hanoi
             resetGame();
         }
 
-
-       
-
         #endregion
 
 
@@ -105,7 +99,6 @@ namespace Hanoi
         {
             handleResultFunction(FunctionType.Reset, InputType.Click);
         }
-
 
         /// <summary>
         /// Handles the Click event of ButtonSolve to automatically solve the game (if not already in progress).
@@ -146,8 +139,7 @@ namespace Hanoi
                     discAmountChanged = false;
                 }              
             }
-        }
-                      
+        }               
 
         /// <summary>
         /// Handles the Click event of the canvas.
@@ -221,8 +213,6 @@ namespace Hanoi
         }
 
         #endregion
-
-      
 
         #region Game Handling
 
@@ -302,7 +292,6 @@ namespace Hanoi
 
 
         #region Manual Game Handling
-
 
         /// <summary>
         /// Moves the disc from global startCanvas to targetCanvas.
@@ -401,6 +390,8 @@ namespace Hanoi
 
         #endregion
 
+        #region GestureInput Handling
+
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
 
@@ -408,8 +399,7 @@ namespace Hanoi
                 IInputElement iE = (IInputElement) sender;
                 Point pos = e.GetPosition(iE);
                 gesturePositions.Add(pos);
-            }
-                 
+            }            
         }
 
         //Register gesture input, input start point
@@ -441,6 +431,23 @@ namespace Hanoi
 
             gesturePositions.Clear();
         }
+
+        #endregion
+
+        #region SpeechInput Handling
+
+        private void onSpeechFeedbackReceived(object sender, SpeechEventArgs e)
+        {
+            if (e != null && e.resultFunction != null && !e.resultFunction.Equals(""))
+            {
+
+                handleResultFunction(e.resultFunction, InputType.Speech);
+            }
+        }
+
+        #endregion
+
+        #region HelperFunctions
 
         private void handleResultFunction(FunctionType functionType = FunctionType.None, InputType inputType = InputType.None)
         {
@@ -507,24 +514,12 @@ namespace Hanoi
           
             }
         }
-     
-
-        #region Speech Handling
-
-        private void onSpeechFeedbackReceived(object sender, SpeechEventArgs e)
-        {
-            if (e != null && e.resultFunction != null && !e.resultFunction.Equals(""))
-            {
-
-                handleResultFunction(e.resultFunction, InputType.Speech);
-            }
-        }
 
         #endregion
 
     }
 
-
+    #region Enums
     public enum FunctionType
     {
         None, Reset, Solve, Canvas1, Canvas2, Canvas3, DiscAmount, Feedback, Close, Put
@@ -534,5 +529,7 @@ namespace Hanoi
     {
         None, Click, Gesture, Speech, Multi
     }
+
+    #endregion
 }
 
