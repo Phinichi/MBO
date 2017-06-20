@@ -451,11 +451,10 @@ namespace Hanoi
 
         private void handleResultFunction(FunctionType functionType = FunctionType.None, InputType inputType = InputType.None)
         {
+            //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
             if (multi != null)
             {
-
-                //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
-
+                handleMultipleInput(functionType, inputType);
             }
             else
             {
@@ -515,6 +514,40 @@ namespace Hanoi
             }
         }
 
+        //THIS FUNCTION STILL NEEDS A TIMER: AFTER CERTAIN TIME, MULTI IS RESETED
+        private void handleMultipleInput(FunctionType functionType, InputType inputType)
+        {
+            if (multi.Source != null)
+            {
+                switch (multi.Key)
+                {
+                    case FunctionType.Close:
+                        if (multi.Source == FunctionType.CloseEnd)
+                        {
+                            //CLOSE APPLICATION: VALID FOR GESTURE & SPEECH
+                        }
+                        break;
+                    case FunctionType.Put:
+                        if (multi.Source != null)
+                        {
+                            switch (multi.Source)
+                            {
+                                //HANDLE ALL OTHER SOURCE INPUTS
+                            }
+                        }
+                        else
+                        {
+                            //HANDLE FINAL INPUT
+                        }
+                       
+
+                        break;
+                }
+            }
+
+
+       }
+
         #endregion
 
     }
@@ -522,7 +555,8 @@ namespace Hanoi
     #region Enums
     public enum FunctionType
     {
-        None, Reset, Solve, Canvas1, Canvas2, Canvas3, DiscAmount, Feedback, Close, Put
+        None, Reset, Solve, Canvas1, Canvas2, Canvas3, DiscAmount, Feedback, Close, Put, CloseEnd,
+        MouseOver
     }
 
     public enum InputType

@@ -37,6 +37,7 @@ namespace Hanoi
             //INPUT NEW CHOICES; NUMBER 1,2,3, That, There
             Choices commands = new Choices();
             commands.Add(new string[] {
+
                 "eins",
                 "zwei",
                 "drei",
@@ -45,6 +46,11 @@ namespace Hanoi
                 "reset",
                 "löse",
                 "put",
+                "number 1",
+                "number 2",
+                "number 3",
+                "that",
+                "there",
                 "close"
             });
 
@@ -84,12 +90,11 @@ namespace Hanoi
                 // case "start":
                 //    startGame();
                 //     break;
-                case "put": break;
-                    args.resultFunction = FunctionType.Put;
-                    break;
+               
                 case "reset":
                     args.resultFunction = FunctionType.Reset;
                     break;
+                //NEED TO BE ENGLISH!!!!
                 case "löse":
                     args.resultFunction = FunctionType.Solve;
                     break;
@@ -101,6 +106,29 @@ namespace Hanoi
                     break;
                 case "drei":
                     args.resultFunction = FunctionType.Canvas3;
+                    break;
+
+                    //MULTIINPUTS
+                case "put": break;
+                    args.resultFunction = FunctionType.Put;
+                    break;
+                case "that": break;
+                    args.resultFunction = FunctionType.MouseOver;
+                    break;
+                case "there": break;
+                    args.resultFunction = FunctionType.MouseOver;
+                    break;
+                case "Number 1": break;
+                    args.resultFunction = FunctionType.Canvas1;
+                    break;
+                case "Number 2": break;
+                    args.resultFunction = FunctionType.Canvas2;
+                    break;
+                case "Number 3": break;
+                    args.resultFunction = FunctionType.Canvas3;
+                    break;
+                case "close": break;
+                    args.resultFunction = FunctionType.Close;
                     break;
 
                 default:

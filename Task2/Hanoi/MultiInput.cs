@@ -8,9 +8,21 @@ namespace Hanoi
 {
     class MultiInput
     {
-        private FunctionType key;
+        protected FunctionType key;
 
-        private FunctionType source;
+        public FunctionType Key
+        {
+            get
+            {
+                return this.key;
+            }
+            set
+            {
+                if (key == null) key = value;
+            }
+        }
+
+        protected FunctionType source;
 
         public FunctionType Source
         {
@@ -24,7 +36,7 @@ namespace Hanoi
             }
         }
 
-        private FunctionType goal;
+        protected FunctionType goal;
 
         public FunctionType Goal
         {
@@ -40,7 +52,7 @@ namespace Hanoi
 
         public MultiInput(FunctionType key)
         {
-            this.key = key;
+            this.Key = key;
         }
     }
 }
