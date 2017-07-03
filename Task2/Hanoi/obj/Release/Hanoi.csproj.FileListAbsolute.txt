@@ -1,0 +1,12 @@
+C:\Users\Duci\projects\MBO\Task2\Hanoi\bin\Release\Hanoi.exe.config
+C:\Users\Duci\projects\MBO\Task2\Hanoi\bin\Release\Hanoi.exe
+C:\Users\Duci\projects\MBO\Task2\Hanoi\bin\Release\Hanoi.pdb
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\MainWindow.baml
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\MainWindow.g.cs
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Properties\App.g.cs
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Hanoi_MarkupCompile.cache
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Hanoi.g.resources
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Hanoi.Properties.Resources.resources
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Hanoi.csproj.GenerateResource.Cache
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Hanoi.exe
+C:\Users\Duci\projects\MBO\Task2\Hanoi\obj\Release\Hanoi.pdb
