@@ -573,12 +573,14 @@ namespace Hanoi
         //THIS FUNCTION STILL NEEDS A TIMER: AFTER CERTAIN TIME, MULTI IS RESETED
         private void handleMultipleInput(FunctionType functionType, InputType inputType)
         {
-            // create 5 second time frame for more inputs
-            System.Timers.Timer timer = new System.Timers.Timer(timeToMultiInput);
-            timer.Start();
-            timer.Elapsed += OnTimeOut;
+            lock(locker)
+            {
+                // create time frame for more inputs
+                System.Timers.Timer timer = new System.Timers.Timer(timeToMultiInput);
+                timer.Start();
+                timer.Elapsed += OnTimeOut;
 
-            switch (multi.Key)
+                switch (multi.Key)
                 {
                     case FunctionType.Close:
                         if (functionType == FunctionType.MouseOver)
@@ -590,11 +592,11 @@ namespace Hanoi
 
                         if (functionType == FunctionType.MouseOver || functionType == FunctionType.MouseOver2) functionType = getMouseOverCanvas();
                         Canvas canvas = functionTypeCanvasToCanvas(functionType);
-                        if ((multi.Source == FunctionType.None && canvas.Children.Count > 0)|| multi.Source != FunctionType.None)
-                        multi.fillSlot(functionType);
+                        if ((multi.Source == FunctionType.None && canvas.Children.Count > 0) || multi.Source != FunctionType.None)
+                            multi.fillSlot(functionType);
                         break;
                 }
-            
+            }    
        }
 
 
