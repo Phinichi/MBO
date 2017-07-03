@@ -53,6 +53,9 @@ namespace Hanoi
         private Feedback feedback = null;
         private MultiInput multi = null;
         private int timeToMultiInput = 5000;
+        private System.Windows.Threading.DispatcherTimer timer = null;
+        public int ticks = 0;
+        //private System.Threading.Timer timer2 = null;
 
         static readonly object locker = new object();
 
@@ -462,8 +465,6 @@ namespace Hanoi
 
         private void handleResultFunction(FunctionType functionType = FunctionType.None, InputType inputType = InputType.None)
         {
-            lock(locker) {
-                //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
                 if (inputType != InputType.None)
                 {
                     string feedbackInputType = "";
@@ -478,9 +479,6 @@ namespace Hanoi
                             break;
                         case InputType.Gesture:
                             feedbackInputType = "Gesture: ";
-                            break;
-                        case InputType.Multi:
-                            feedbackInputType = "Multi: ";
                             break;
                         default: break;
                     }
@@ -527,18 +525,43 @@ namespace Hanoi
                                 handleCanvasInput(Canvas3);
                                 break;
 
-                            default: break;
+                            default:
+                                feedback.setMessageBox("No valid input!");
+                                break;
                         }
                     }
 
-                }
-            }            
+                }      
         }
 
-        private void OnTimeOut(object sender, ElapsedEventArgs e)
+        private void startTimer()
         {
-            multi = null;
-            feedback.setMessageBox("Time passed. Resetting further inputs.");
+            // create time frame for more inputs
+            timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Tick += new EventHandler(OnTick);
+            timer.Interval = new TimeSpan(0, 0, 10);
+            timer.Start();
+        }
+
+        private void OnTick(object sender, EventArgs e)
+        {
+                stopTimer();
+                multi = null;
+                feedback.setMessageBox("Time passed. Resetting inputs.");
+        }
+
+        private void stopTimer()
+        {
+            if (timer != null)
+            {
+                timer.Stop();
+            }     
+        }
+
+        private void resetTimer()
+        {
+            stopTimer();
+            startTimer();
         }
 
         private void OnSlotFilled(object sender, MultiInputEventArgs e)
@@ -551,18 +574,22 @@ namespace Hanoi
                     if (e.slotNumber == 0)
                     {
                         feedback.setMessageBox(e.feedback);
+                        startTimer();
                     }
                     if (e.slotNumber == 1)
                     {
                         feedback.setMessageBox(e.feedback);
                         startCanvas = null;
                         handleCanvasInput(functionTypeCanvasToCanvas(e.resultFunction));
+                        stopTimer();
+                        startTimer();
         
                     }
                     else if (e.slotNumber == 2)
                     {
                         feedback.setMessageBox(e.feedback);
                         handleCanvasInput(functionTypeCanvasToCanvas(e.resultFunction));
+                        stopTimer();
                         multi = null;
 
                     }
@@ -570,16 +597,9 @@ namespace Hanoi
             }
         }
 
-        //THIS FUNCTION STILL NEEDS A TIMER: AFTER CERTAIN TIME, MULTI IS RESETED
+
         private void handleMultipleInput(FunctionType functionType, InputType inputType)
         {
-            lock(locker)
-            {
-                // create time frame for more inputs
-                System.Timers.Timer timer = new System.Timers.Timer(timeToMultiInput);
-                timer.Start();
-                timer.Elapsed += OnTimeOut;
-
                 switch (multi.Key)
                 {
                     case FunctionType.Close:
@@ -587,19 +607,76 @@ namespace Hanoi
                         {
                             multi.fillSlot(FunctionType.CloseEnd);
                         }
+                        else
+                        {
+                            wrongMultiInput("No valid closing command!");
+                        }
                         break;
                     case FunctionType.Put:
 
-                        if (functionType == FunctionType.MouseOver || functionType == FunctionType.MouseOver2) functionType = getMouseOverCanvas();
-                        Canvas canvas = functionTypeCanvasToCanvas(functionType);
-                        if ((multi.Source == FunctionType.None && canvas.Children.Count > 0) || multi.Source != FunctionType.None)
-                            multi.fillSlot(functionType);
+                        if (functionType == FunctionType.MouseOver && multi.Source == FunctionType.None)
+                        {
+                            functionType = getMouseOverCanvas();
+                            if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
+                            {
+                                Canvas canvas = functionTypeCanvasToCanvas(functionType);
+                                if (canvas.Children.Count > 0) multi.fillSlot(functionType);
+                                else wrongMultiInput("Canvas has no children!");
+                            }
+                            else
+                            {
+                                wrongMultiInput("No valid Canvas selected!");
+                            }
+
+                        }
+                        else if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
+                        {
+                            
+                            if (multi.Source == FunctionType.None)
+                            {
+                                Canvas canvas = functionTypeCanvasToCanvas(functionType);
+                                if (canvas.Children.Count > 0) multi.fillSlot(functionType);
+                                else wrongMultiInput("Canvas has no children!");
+                            }
+                            else if (multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
+                            {
+                                multi.fillSlot(functionType);
+                            }
+                        }
+
+                        else if (functionType == FunctionType.MouseOver2 && multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
+                        {
+                            functionType = getMouseOverCanvas();
+                            if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
+                            {
+                                multi.fillSlot(functionType);
+
+                            }
+                            else
+                            {
+                                wrongMultiInput("No valid Canvas selected!");
+                            }
+                        }
+
+                        else
+                        {
+                            wrongMultiInput("No valid command sequence!");
+                            resetStartCanvas();
+                        }
+
                         break;
+                    default: break;
                 }
-            }    
        }
 
+        private void wrongMultiInput(string p)
+        {
+            stopTimer();
+            multi = null;
+            feedback.setMessageBox(p);
+        }
 
+  
         private FunctionType getMouseOverCanvas()
         {
             FunctionType functionType = FunctionType.None;
@@ -646,6 +723,8 @@ namespace Hanoi
 
         #endregion
 
+
+    
     }
 
     #region Enums

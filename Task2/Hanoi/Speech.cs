@@ -75,7 +75,7 @@ namespace Hanoi
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
             //feedback.setMessageBox("Speech detected!");
-            //Console.WriteLine("Speech detected!");
+            Console.WriteLine("Speech detected!");
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)

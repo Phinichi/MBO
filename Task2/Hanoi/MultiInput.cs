@@ -51,7 +51,6 @@ namespace Hanoi
         }
 
         public event EventHandler<MultiInputEventArgs> SlotInput;
-        public event EventHandler<MultiInputEventArgs> TimeOut;
 
         public MultiInput()
         {
@@ -74,7 +73,8 @@ namespace Hanoi
             }
             else if (Key == FunctionType.Close && functionType == FunctionType.CloseEnd)
             {
-                args.slotNumber = 1;
+                Goal = functionType;
+                args.slotNumber = 2;
                 args.resultFunction = FunctionType.CloseEnd;
                 args.feedback = "Combined Input: " + Key.ToString();
                 OnSlotInput(args);
@@ -84,7 +84,7 @@ namespace Hanoi
                  if (Source == FunctionType.None){
                     Source = functionType;
                     args.slotNumber = 1;
-                    args.feedback = "Combined Input: " + Key.ToString() + Source.ToString();
+                    args.feedback = "Combined Input: " + Key.ToString() + " " + Source.ToString();
                     args.resultFunction = Source;
                     OnSlotInput(args);
                 }
@@ -94,7 +94,7 @@ namespace Hanoi
                     Goal = functionType;
                     args.slotNumber = 2;
                     args.resultFunction = Goal;
-                    args.feedback = "Combined Input: " + Key.ToString() + Source.ToString() + " to " + Goal.ToString();
+                    args.feedback = "Combined Input: " + Key.ToString() + " " + Source.ToString() + " to " + Goal.ToString();
                     OnSlotInput(args);
                 }
             }
@@ -113,15 +113,6 @@ namespace Hanoi
         protected virtual void OnSlotInput(MultiInputEventArgs e)
         {
             EventHandler<MultiInputEventArgs> handler = SlotInput;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        protected virtual void OnTimeOut(MultiInputEventArgs e)
-        {
-            EventHandler<MultiInputEventArgs> handler = TimeOut;
             if (handler != null)
             {
                 handler(this, e);
