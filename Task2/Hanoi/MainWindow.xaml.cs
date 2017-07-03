@@ -445,10 +445,10 @@ namespace Hanoi
                     handleResultFunction(FunctionType.Canvas3, InputType.Gesture);
                     break;
                 case 4:
-                    handleResultFunction(FunctionType.Close, InputType.Gesture);
+                    handleResultFunction(FunctionType.Schließe, InputType.Gesture);
                     break;
                 case 5:
-                    handleResultFunction(FunctionType.CloseEnd, InputType.Gesture);
+                    handleResultFunction(FunctionType.Schließe2, InputType.Gesture);
                     break;
             }
 
