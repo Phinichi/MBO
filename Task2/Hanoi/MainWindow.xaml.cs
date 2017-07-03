@@ -21,6 +21,7 @@ using System.Speech;
 using System.Speech.Recognition;
 using System.Globalization;
 using System.Drawing;
+using System.Timers;
 
 namespace Hanoi
 {
@@ -86,7 +87,6 @@ namespace Hanoi
         }
 
         #endregion
-
 
         #region Interaction Handling
 
@@ -299,7 +299,6 @@ namespace Hanoi
 
         #endregion
 
-
         #region Manual Game Handling
 
         /// <summary>
@@ -477,6 +476,9 @@ namespace Hanoi
                     case InputType.Gesture:
                         feedbackInputType = "Gesture: ";
                         break;
+                    case InputType.Multi:
+                        feedbackInputType = "Multi: ";
+                        break;
                     default: break;
                 }
 
@@ -499,7 +501,6 @@ namespace Hanoi
                             multi.SlotInput += OnSlotFilled;
                             multi.fillSlot(functionType);                         
                             break;
-
                         case FunctionType.Close:
                             multi = new MultiInput();
                             multi.SlotInput += OnSlotFilled;
@@ -528,6 +529,12 @@ namespace Hanoi
                 }
           
             }
+        }
+
+        private void OnTimeOut(object sender, ElapsedEventArgs e)
+        {
+            multi = null;
+            feedback.setMessageBox("Time passed. Resetting further inputs.");
         }
 
         private void OnSlotFilled(object sender, MultiInputEventArgs e)
@@ -562,7 +569,12 @@ namespace Hanoi
         //THIS FUNCTION STILL NEEDS A TIMER: AFTER CERTAIN TIME, MULTI IS RESETED
         private void handleMultipleInput(FunctionType functionType, InputType inputType)
         {
-                switch (multi.Key)
+            // create 5 second time frame for more inputs
+            System.Timers.Timer timer = new System.Timers.Timer(5000);
+            timer.Start();
+            timer.Elapsed += OnTimeOut;
+
+            switch (multi.Key)
                 {
                     case FunctionType.Close:
                         if (functionType == FunctionType.MouseOver)

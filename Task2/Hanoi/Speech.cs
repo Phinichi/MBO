@@ -76,7 +76,7 @@ namespace Hanoi
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
-            //setMessageBox("Speech input not recognized!");
+            feedback.setMessageBox("Speech detected!");
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
@@ -129,20 +129,17 @@ namespace Hanoi
                 case "schließe": 
                     args.resultFunction = FunctionType.Close;
                     break;
-
                 default:
-                    onNotRecoq();
+                    onNotRecog();
                     break;
             }
 
             OnSpeechFeedback(args);
         }
 
-        private void onNotRecoq()
+        private void onNotRecog()
         {
-            System.Speech.Synthesis.SpeechSynthesizer synthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
-
-            synthesizer.Speak("Sorry, I did not understand you.");
+            feedback.setMessageBox("Speech not recogniced!");
         }
 
         protected virtual void OnSpeechFeedback(SpeechEventArgs e)

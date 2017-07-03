@@ -51,6 +51,7 @@ namespace Hanoi
         }
 
         public event EventHandler<MultiInputEventArgs> SlotInput;
+        public event EventHandler<MultiInputEventArgs> TimeOut;
 
         public MultiInput()
         {
@@ -112,6 +113,15 @@ namespace Hanoi
         protected virtual void OnSlotInput(MultiInputEventArgs e)
         {
             EventHandler<MultiInputEventArgs> handler = SlotInput;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void OnTimeOut(MultiInputEventArgs e)
+        {
+            EventHandler<MultiInputEventArgs> handler = TimeOut;
             if (handler != null)
             {
                 handler(this, e);
