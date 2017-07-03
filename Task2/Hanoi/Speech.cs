@@ -43,7 +43,7 @@ namespace Hanoi
                 "drei",
 
                // "start",
-                "reset",
+                "neustart",
                 "löse",
                 "setze",
                 "nummer eins",
@@ -74,7 +74,7 @@ namespace Hanoi
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
-            feedback.setMessageBox("Speech detected!");
+            feedback.setMessageBox("Sprache erkannt!");
             Console.WriteLine("Speech detected!");
         }
 
@@ -89,7 +89,7 @@ namespace Hanoi
                 //    startGame();
                 //     break;
                
-                case "reset":
+                case "neustart":
                     args.resultFunction = FunctionType.Reset;
                     break;
                 //NEED TO BE ENGLISH!!!!

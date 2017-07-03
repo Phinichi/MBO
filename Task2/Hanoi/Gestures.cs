@@ -86,7 +86,6 @@ namespace Hanoi
                 case 2: return templateTwo; break;
                 case 3: return templateThree; break;
                 default: return new List<double>();
-
             }
         }
 
@@ -140,7 +139,7 @@ namespace Hanoi
             }
             
             //Creating Templates in template1,2,3.xml here
-            //MyClass.SerializeObject(gestureAngles, "template3.xml");
+            //MyClass.SerializeObject(gestureAngles, "template2.xml");
 
             return gestureAngles;
         }
