@@ -11,7 +11,7 @@ using System.IO;
 namespace Hanoi
 {
     class Gestures 
-    {
+    {        
         private List<double> templateOne = null;
 
         public List<double> TemplateOne
@@ -127,15 +127,20 @@ namespace Hanoi
                     //sqrt((P1x - P2x)2 + (P1y - P2y)2)
                     //arccos((P122 + P132 - P232) / (2 * P12 * P13))
 
-                    double angle = Math.Acos((Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2)) / (2 * a * b));
+                    // Avoid NaN due to rounding errors
+                    double tmp = (Math.Pow(a, 2) + Math.Pow(b, 2) - Math.Pow(c, 2)) / (2 * a * b);
+                    if (tmp > 1 || tmp < -1)
+                        tmp = Math.Round(tmp);
 
-                    gestureAngles.Add(RadToDeg(angle));
+                    double angle = RadToDeg(Math.Acos(tmp));
+
+                    gestureAngles.Add(angle);
                 }
                
             }
             
             //Creating Templates in template1,2,3.xml here
-            //MyClass.SerializeObject(gestureAngles, "template2.xml");
+            //MyClass.SerializeObject(gestureAngles, "template3.xml");
 
             return gestureAngles;
         }
@@ -152,14 +157,13 @@ namespace Hanoi
             int i = 0;
             if (localDistanceToTemplate1 < localDistanceToTemplate2 && localDistanceToTemplate1 < localDistanceToTemplate3) i = 1;
             else if (localDistanceToTemplate2 < localDistanceToTemplate1 && localDistanceToTemplate2 < localDistanceToTemplate3) i = 2;
-            else i = 3;
+            else if (localDistanceToTemplate3 < localDistanceToTemplate1 && localDistanceToTemplate3 < localDistanceToTemplate2) i = 3;
 
             return i;
         }
 
         private double calculateLocalDistance(List<double> gestureAngles, List<double> templateAngles)
         {
-
 
             double[,] distances = new double[gestureAngles.Count, templateAngles.Count];
              
@@ -181,8 +185,7 @@ namespace Hanoi
                     else angleDistance = ((1 / Math.PI) * ((2 * Math.PI) - Math.Abs(gestureAngle - templateAngle)));
 
                     distances[i, j] = angleDistance;
-
-			    }
+                }
             }
 
             //DTW Distance
@@ -210,13 +213,12 @@ namespace Hanoi
                     double[] localMinimums = new double[3];
 
 
-                        localMinimums[0] = localDistances[i, j - 1];
-                        localMinimums[1] = 2 * localDistances[i - 1, j - 1];
-                        localMinimums[2] = localDistances[i - 1, j];
+                    localMinimums[0] = localDistances[i, j - 1];
+                    localMinimums[1] = 2 * localDistances[i - 1, j - 1];
+                    localMinimums[2] = localDistances[i - 1, j];
 
-                        double localMinimum = Math.Min((Math.Min(localMinimums[0], localMinimums[1])), localMinimums[2]);
-                        localDistances[i, j] = localMinimum + distances[i, j];
-                   
+                    double localMinimum = Math.Min((Math.Min(localMinimums[0], localMinimums[1])), localMinimums[2]);
+                    localDistances[i, j] = localMinimum + distances[i, j];
                 }
                 
             }

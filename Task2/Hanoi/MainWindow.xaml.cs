@@ -429,6 +429,9 @@ namespace Hanoi
         
             switch (templateNumber)
             {
+                case 0:
+                    feedback.setMessageBox("Geste nicht erkannt, bitte nochmals versuchen.");
+                    break;
                 case 1:
                     handleResultFunction(FunctionType.Canvas1, InputType.Gesture);
                     break;
