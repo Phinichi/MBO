@@ -45,13 +45,13 @@ namespace Hanoi
                // "start",
                 "reset",
                 "löse",
-                "put",
-                "number 1",
-                "number 2",
-                "number 3",
-                "that",
-                "there",
-                "close"
+                "setze",
+                "nummer eins",
+                "nummer zwei",
+                "nummer drei",
+                "dies",
+                "dort",
+                "schließe"
             });
 
             GrammarBuilder gb = new GrammarBuilder();
@@ -84,7 +84,6 @@ namespace Hanoi
           
             SpeechEventArgs args = new SpeechEventArgs();
  
-
             switch (e.Result.Text)
             {
                 // case "start":
@@ -109,25 +108,25 @@ namespace Hanoi
                     break;
 
                     //MULTIINPUTS
-                case "put": break;
+                case "setze": 
                     args.resultFunction = FunctionType.Put;
                     break;
-                case "that": break;
+                case "dies": 
                     args.resultFunction = FunctionType.MouseOver;
                     break;
-                case "there": break;
-                    args.resultFunction = FunctionType.MouseOver;
+                case "dort":
+                    args.resultFunction = FunctionType.MouseOver2;
                     break;
-                case "Number 1": break;
+                case "nummer eins": 
                     args.resultFunction = FunctionType.Canvas1;
                     break;
-                case "Number 2": break;
+                case "nummer zwei":
                     args.resultFunction = FunctionType.Canvas2;
                     break;
-                case "Number 3": break;
+                case "nummer drei":
                     args.resultFunction = FunctionType.Canvas3;
                     break;
-                case "close": break;
+                case "schließe": 
                     args.resultFunction = FunctionType.Close;
                     break;
 

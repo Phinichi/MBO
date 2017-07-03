@@ -169,25 +169,34 @@ namespace Hanoi
 
         #region Canvas Handling 
 
-        private void handleCanvasInput(Canvas canvas)
+        private bool handleCanvasInput(Canvas canvas)
         {
+            bool canvasInput = false; 
+
             if (canvas != null)
             {
                 if (this.startCanvas == null)
                 {
-                    if (canvas.Children.Count > 0)
+                    if (canvas.Children.Count > 0){
                         setStartCanvas(canvas);
+                        canvasInput = true;
+                    }
+                        
                     else
                     {
                         feedback.setMessageBox(canvas.Name + " has no discs!");
+                        canvasInput = false;
                     }
                 }
                 else
                 {
+                    canvasInput = true; 
                     moveDisc(canvas);
                     resetStartCanvas();
                 }
             }
+
+            return canvasInput;
 
         }
 
@@ -440,7 +449,7 @@ namespace Hanoi
         {
             if (e != null && e.resultFunction != null && !e.resultFunction.Equals(""))
             {
-
+                Console.WriteLine(e.resultFunction.ToString());
                 handleResultFunction(e.resultFunction, InputType.Speech);
             }
         }
@@ -451,46 +460,54 @@ namespace Hanoi
 
         private void handleResultFunction(FunctionType functionType = FunctionType.None, InputType inputType = InputType.None)
         {
+  
             //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
+            if (inputType != InputType.None)
+            {
+                string feedbackInputType = "";
+
+                switch (inputType)
+                {
+                    case InputType.Speech:
+                        feedbackInputType = "Speech: ";
+                        break;
+                    case InputType.Click:
+                        feedbackInputType = "Click: ";
+                        break;
+                    case InputType.Gesture:
+                        feedbackInputType = "Gesture: ";
+                        break;
+                    default: break;
+                }
+
+                feedback.setInputFeedback(feedbackInputType + functionType.ToString());
+            }
+
             if (multi != null)
             {
                 handleMultipleInput(functionType, inputType);
             }
             else
             {
-                if (inputType != InputType.None)
-                {
-                    string feedbackInputType = "";
-
-                    switch (inputType)
-                    {
-                        case InputType.Speech:
-                            feedbackInputType = "Speech: ";
-                            break;
-                        case InputType.Click:
-                            feedbackInputType = "Click: ";
-                            break;
-                        case InputType.Gesture:
-                            feedbackInputType = "Gesture: ";
-                            break;
-                        default: break;
-                    }
-
-                    feedback.setInputFeedback(feedbackInputType + functionType.ToString());
-                }
-
-
+                
                 if (functionType != FunctionType.None)
                 {
                     switch (functionType)
                     {
                         case FunctionType.Put:
-                            feedback.setMessageBox("Combined Input: PUT - ");
-                            multi = new MultiInput(functionType);
-
+                            multi = new MultiInput();
+                            multi.SlotInput += OnSlotFilled;
+                            multi.fillSlot(functionType);                         
                             break;
+
+                        case FunctionType.Close:
+                            multi = new MultiInput();
+                            multi.SlotInput += OnSlotFilled;
+                            multi.fillSlot(functionType);                         
+                            break;
+
                         case FunctionType.Reset:
-                            feedback.setMessageBox("Your reseted the Game!");
+                            feedback.setMessageBox("You reseted the Game!");
                             resetGame();
                             break;
                         case FunctionType.Solve:
@@ -505,8 +522,7 @@ namespace Hanoi
                         case FunctionType.Canvas3:
                             handleCanvasInput(Canvas3);
                             break;
-                        case FunctionType.Close:
-                            break;
+   
                         default: break;
                     }
                 }
@@ -514,39 +530,101 @@ namespace Hanoi
             }
         }
 
+        private void OnSlotFilled(object sender, MultiInputEventArgs e)
+        {
+            if (e != null)
+            {
+                if (e.resultFunction == FunctionType.CloseEnd) closeApplication();
+                else 
+                {
+                    if (e.slotNumber == 0)
+                    {
+                        feedback.setMessageBox(e.feedback);
+                    }
+                    if (e.slotNumber == 1)
+                    {
+                        feedback.setMessageBox(e.feedback);
+                        startCanvas = null;
+                        handleCanvasInput(functionTypeCanvasToCanvas(e.resultFunction));
+        
+                    }
+                    else if (e.slotNumber == 2)
+                    {
+                        feedback.setMessageBox(e.feedback);
+                        handleCanvasInput(functionTypeCanvasToCanvas(e.resultFunction));
+                        multi = null;
+
+                    }
+                }
+            }
+        }
+
         //THIS FUNCTION STILL NEEDS A TIMER: AFTER CERTAIN TIME, MULTI IS RESETED
         private void handleMultipleInput(FunctionType functionType, InputType inputType)
         {
-            if (multi.Source != null)
-            {
                 switch (multi.Key)
                 {
                     case FunctionType.Close:
-                        if (multi.Source == FunctionType.CloseEnd)
+                        if (functionType == FunctionType.MouseOver)
                         {
-                            //CLOSE APPLICATION: VALID FOR GESTURE & SPEECH
+                            multi.fillSlot(FunctionType.CloseEnd);
                         }
                         break;
                     case FunctionType.Put:
-                        if (multi.Source != null)
-                        {
-                            switch (multi.Source)
-                            {
-                                //HANDLE ALL OTHER SOURCE INPUTS
-                            }
-                        }
-                        else
-                        {
-                            //HANDLE FINAL INPUT
-                        }
-                       
 
+                        if (functionType == FunctionType.MouseOver || functionType == FunctionType.MouseOver2) functionType = getMouseOverCanvas();
+                        Canvas canvas = functionTypeCanvasToCanvas(functionType);
+                        if ((multi.Source == FunctionType.None && canvas.Children.Count > 0)|| multi.Source != FunctionType.None)
+                        multi.fillSlot(functionType);
                         break;
                 }
+            
+       }
+
+
+        private FunctionType getMouseOverCanvas()
+        {
+            FunctionType functionType = FunctionType.None;
+
+            if (Canvas1.IsMouseOver) functionType = FunctionType.Canvas1; 
+            else if (Canvas2.IsMouseOver) functionType = FunctionType.Canvas2; 
+            else if (Canvas3.IsMouseOver) functionType = FunctionType.Canvas3;
+
+            return functionType;
+        }
+
+        private void closeApplication()
+        {
+            this.Close();
+        }
+
+        private void executeMultiInputMove()
+        {
+            handleCanvasInput(functionTypeCanvasToCanvas(multi.Goal));
+    
+            multi = null;
+        }
+
+        private Canvas functionTypeCanvasToCanvas(FunctionType functionType)
+        {
+            Canvas canvas = null;
+            switch (functionType)
+            {
+                case FunctionType.Canvas1:
+                    canvas = Canvas1;
+                    break;
+                case FunctionType.Canvas2:
+                    canvas =  Canvas2;
+                    break;
+                case FunctionType.Canvas3:
+                    canvas = Canvas3;
+                    break;
+
+                default: break;
             }
 
-
-       }
+            return canvas;
+        }
 
         #endregion
 
@@ -556,7 +634,7 @@ namespace Hanoi
     public enum FunctionType
     {
         None, Reset, Solve, Canvas1, Canvas2, Canvas3, DiscAmount, Feedback, Close, Put, CloseEnd,
-        MouseOver
+        MouseOver, MouseOver2
     }
 
     public enum InputType
