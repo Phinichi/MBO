@@ -444,6 +444,12 @@ namespace Hanoi
                 case 3:
                     handleResultFunction(FunctionType.Canvas3, InputType.Gesture);
                     break;
+                case 4:
+                    handleResultFunction(FunctionType.Close, InputType.Gesture);
+                    break;
+                case 5:
+                    handleResultFunction(FunctionType.CloseEnd, InputType.Gesture);
+                    break;
             }
 
             gesturePositions.Clear();

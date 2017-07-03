@@ -116,11 +116,11 @@ namespace Hanoi
         {
             switch (i)
             {
-                case 1: return templateOne; break;
-                case 2: return templateTwo; break;
-                case 3: return templateThree; break;
-                case 4: return templateClose1; break;
-                case 5: return templateClose2; break;
+                case 1: return templateOne;
+                case 2: return templateTwo;
+                case 3: return templateThree;
+                case 4: return templateClose1;
+                case 5: return templateClose2;
                 default: return new List<double>();
             }
         }
@@ -175,7 +175,7 @@ namespace Hanoi
             }
             
             //Creating Templates in template1,2,3.xml here
-            MyClass.SerializeObject(gestureAngles, "templateClose2.xml");
+            //MyClass.SerializeObject(gestureAngles, "templateClose2.xml");
 
             return gestureAngles;
         }
