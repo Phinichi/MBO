@@ -190,7 +190,7 @@ namespace Hanoi
                         
                     else
                     {
-                        feedback.setMessageBox(canvas.Name + " has no discs!");
+                        feedback.setMessageBox(canvas.Name + " besitzt keine Scheiben!");
                         canvasInput = false;
                     }
                 }
@@ -299,7 +299,7 @@ namespace Hanoi
             }
             else
             {
-                feedback.setMessageBox("Reset the Game first!");
+                feedback.setMessageBox("Starte zuerst das Spiel neu!");
             }
         }
 
@@ -341,7 +341,7 @@ namespace Hanoi
                     this.startCanvas.Children.Remove(startRect);
                     Canvas.SetTop(startRect, rectTop);
                     targetCanvas.Children.Add(startRect);
-                    feedback.setMessageBox("Scheibe " + this.startCanvas.Name + " auf " + targetCanvas.Name + "bewegt.");
+                    feedback.setMessageBox("Scheibe " + this.startCanvas.Name + " auf " + targetCanvas.Name + " bewegt.");
 
                     if (Canvas3.Children.Count == this.discAmount)
                     {
@@ -433,7 +433,7 @@ namespace Hanoi
             switch (templateNumber)
             {
                 case 0:
-                    feedback.setMessageBox("Geste nicht erkannt, bitte nochmals versuchen.");
+                    feedback.setMessageBox("Geste nicht erkannt, bitte erneut versuchen.");
                     break;
                 case 1:
                     handleResultFunction(FunctionType.Canvas1, InputType.Gesture);
@@ -529,7 +529,7 @@ namespace Hanoi
                                 break;
 
                             default:
-                                feedback.setMessageBox("No valid input!");
+                                feedback.setMessageBox("Keine gültige Eingabe!");
                                 break;
                         }
                     }
@@ -550,7 +550,7 @@ namespace Hanoi
         {
                 stopTimer();
                 multi = null;
-                feedback.setMessageBox("Zeit für Multiinput abgelaufen.");
+                feedback.setMessageBox("Zeit für die Eingabe abgelaufen.");
         }
 
         private void stopTimer()
@@ -612,7 +612,7 @@ namespace Hanoi
                         }
                         else
                         {
-                            wrongMultiInput("No valid closing command!");
+                            wrongMultiInput("Kein gültiges Schließkommando!");
                         }
                         break;
                     case FunctionType.Put:
@@ -624,11 +624,11 @@ namespace Hanoi
                             {
                                 Canvas canvas = functionTypeCanvasToCanvas(functionType);
                                 if (canvas.Children.Count > 0) multi.fillSlot(functionType);
-                                else wrongMultiInput("Canvas has no children!");
+                                else wrongMultiInput("Canvas besitzt keine Scheiben!");
                             }
                             else
                             {
-                                wrongMultiInput("No valid Canvas selected!");
+                                wrongMultiInput("Kein gültiger Canvas selektiert!");
                             }
 
                         }
@@ -639,7 +639,7 @@ namespace Hanoi
                             {
                                 Canvas canvas = functionTypeCanvasToCanvas(functionType);
                                 if (canvas.Children.Count > 0) multi.fillSlot(functionType);
-                                else wrongMultiInput("Canvas has no children!");
+                                else wrongMultiInput("Canvas besitzt keine Scheiben!");
                             }
                             else if (multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
                             {
@@ -657,13 +657,13 @@ namespace Hanoi
                             }
                             else
                             {
-                                wrongMultiInput("No valid Canvas selected!");
+                                wrongMultiInput("Kein gültiger Canvas selektiert!");
                             }
                         }
 
                         else
                         {
-                            wrongMultiInput("No valid command sequence!");
+                            wrongMultiInput("Kein gültiges Kommando!");
                             resetStartCanvas();
                         }
 
