@@ -68,15 +68,14 @@ namespace Hanoi
             sre.SetInputToDefaultAudioDevice();
 
             // Start asynchronous, continuous speech recognition.
-            sre.RecognizeAsync(RecognizeMode.Multiple);
-
-
+            sre.RecognizeAsync(RecognizeMode.Multiple);            
         }
 
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
             feedback.setMessageBox("Speech detected!");
+            Console.WriteLine("Speech detected!");
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)

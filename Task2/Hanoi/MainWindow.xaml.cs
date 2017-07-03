@@ -52,6 +52,9 @@ namespace Hanoi
         private Speech speech = null;
         private Feedback feedback = null;
         private MultiInput multi = null;
+        private int timeToMultiInput = 5000;
+
+        static readonly object locker = new object();
 
         #endregion
 
@@ -459,76 +462,77 @@ namespace Hanoi
 
         private void handleResultFunction(FunctionType functionType = FunctionType.None, InputType inputType = InputType.None)
         {
-  
-            //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
-            if (inputType != InputType.None)
-            {
-                string feedbackInputType = "";
-
-                switch (inputType)
+            lock(locker) {
+                //FILL MULTI UP, instead of intepreting! ADD TO FEEDBACK MESSAGE! Trigger final Function!
+                if (inputType != InputType.None)
                 {
-                    case InputType.Speech:
-                        feedbackInputType = "Speech: ";
-                        break;
-                    case InputType.Click:
-                        feedbackInputType = "Click: ";
-                        break;
-                    case InputType.Gesture:
-                        feedbackInputType = "Gesture: ";
-                        break;
-                    case InputType.Multi:
-                        feedbackInputType = "Multi: ";
-                        break;
-                    default: break;
-                }
+                    string feedbackInputType = "";
 
-                feedback.setInputFeedback(feedbackInputType + functionType.ToString());
-            }
-
-            if (multi != null)
-            {
-                handleMultipleInput(functionType, inputType);
-            }
-            else
-            {
-                
-                if (functionType != FunctionType.None)
-                {
-                    switch (functionType)
+                    switch (inputType)
                     {
-                        case FunctionType.Put:
-                            multi = new MultiInput();
-                            multi.SlotInput += OnSlotFilled;
-                            multi.fillSlot(functionType);                         
+                        case InputType.Speech:
+                            feedbackInputType = "Speech: ";
                             break;
-                        case FunctionType.Close:
-                            multi = new MultiInput();
-                            multi.SlotInput += OnSlotFilled;
-                            multi.fillSlot(functionType);                         
+                        case InputType.Click:
+                            feedbackInputType = "Click: ";
                             break;
-
-                        case FunctionType.Reset:
-                            feedback.setMessageBox("You reseted the Game!");
-                            resetGame();
+                        case InputType.Gesture:
+                            feedbackInputType = "Gesture: ";
                             break;
-                        case FunctionType.Solve:
-                            solveGame();
+                        case InputType.Multi:
+                            feedbackInputType = "Multi: ";
                             break;
-                        case FunctionType.Canvas1:
-                            handleCanvasInput(Canvas1);
-                            break;
-                        case FunctionType.Canvas2:
-                            handleCanvasInput(Canvas2);
-                            break;
-                        case FunctionType.Canvas3:
-                            handleCanvasInput(Canvas3);
-                            break;
-   
                         default: break;
                     }
+
+                    feedback.setInputFeedback(feedbackInputType + functionType.ToString());
                 }
-          
-            }
+
+                if (multi != null)
+                {
+                    handleMultipleInput(functionType, inputType);
+                }
+                else
+                {
+
+                    if (functionType != FunctionType.None)
+                    {
+                        switch (functionType)
+                        {
+                            case FunctionType.Put:
+                                multi = new MultiInput();
+                                multi.SlotInput += OnSlotFilled;
+                                multi.fillSlot(functionType);
+                                break;
+                            case FunctionType.Close:
+                                multi = new MultiInput();
+                                multi.SlotInput += OnSlotFilled;
+                                multi.fillSlot(functionType);
+                                break;
+
+                            case FunctionType.Reset:
+                                feedback.setMessageBox("You resetted the Game!");
+                                resetGame();
+                                break;
+                            case FunctionType.Solve:
+                                solveGame();
+                                break;
+                            case FunctionType.Canvas1:
+                                handleCanvasInput(Canvas1);
+                                break;
+                            case FunctionType.Canvas2:
+                                handleCanvasInput(Canvas2);
+                                break;
+                            case FunctionType.Canvas3:
+                                handleCanvasInput(Canvas3);
+                                break;
+
+                            default: break;
+                        }
+                    }
+
+                }
+            }            
         }
 
         private void OnTimeOut(object sender, ElapsedEventArgs e)
@@ -570,7 +574,7 @@ namespace Hanoi
         private void handleMultipleInput(FunctionType functionType, InputType inputType)
         {
             // create 5 second time frame for more inputs
-            System.Timers.Timer timer = new System.Timers.Timer(5000);
+            System.Timers.Timer timer = new System.Timers.Timer(timeToMultiInput);
             timer.Start();
             timer.Elapsed += OnTimeOut;
 
