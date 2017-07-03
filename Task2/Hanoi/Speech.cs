@@ -91,11 +91,11 @@ namespace Hanoi
                 //     break;
                
                 case "neustart":
-                    args.resultFunction = FunctionType.Reset;
+                    args.resultFunction = FunctionType.Neustart;
                     break;
                 //NEED TO BE ENGLISH!!!!
                 case "löse":
-                    args.resultFunction = FunctionType.Solve;
+                    args.resultFunction = FunctionType.Löse;
                     break;
                 case "eins":
                     args.resultFunction = FunctionType.Canvas1;
@@ -109,7 +109,7 @@ namespace Hanoi
 
                     //MULTIINPUTS
                 case "bewege": 
-                    args.resultFunction = FunctionType.Put;
+                    args.resultFunction = FunctionType.Bewege;
                     break;
                 case "dies": 
                     args.resultFunction = FunctionType.MouseOver;
@@ -127,7 +127,7 @@ namespace Hanoi
                     args.resultFunction = FunctionType.Canvas3;
                     break;
                 case "schließe": 
-                    args.resultFunction = FunctionType.Close;
+                    args.resultFunction = FunctionType.Schließe;
                     break;
                 default:
                     onNotRecog();

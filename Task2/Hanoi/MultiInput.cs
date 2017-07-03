@@ -63,28 +63,28 @@ namespace Hanoi
         {
             MultiInputEventArgs args = new MultiInputEventArgs();
 
-            if (Key == FunctionType.None && (functionType == FunctionType.Put || functionType == FunctionType.Close))
+            if (Key == FunctionType.None && (functionType == FunctionType.Bewege || functionType == FunctionType.Schließe))
             {
                     Key = functionType;
                     args.slotNumber = 0;
                     args.resultFunction = Key;
-                    args.feedback = "Combined Input: " + Key.ToString();
+                    args.feedback = "Kommandosequenz: " + Key.ToString();
                     OnSlotInput(args);
             }
-            else if (Key == FunctionType.Close && functionType == FunctionType.CloseEnd)
+            else if (Key == FunctionType.Schließe && functionType == FunctionType.Schließe2)
             {
                 Goal = functionType;
                 args.slotNumber = 2;
-                args.resultFunction = FunctionType.CloseEnd;
-                args.feedback = "Combined Input: " + Key.ToString();
+                args.resultFunction = FunctionType.Schließe2;
+                args.feedback = "Kommandosequenz: " + Key.ToString();
                 OnSlotInput(args);
             }
-            else if (Key == FunctionType.Put && functionTypeIsCanvas(functionType))
+            else if (Key == FunctionType.Bewege && functionTypeIsCanvas(functionType))
             {
                  if (Source == FunctionType.None){
                     Source = functionType;
                     args.slotNumber = 1;
-                    args.feedback = "Combined Input: " + Key.ToString() + " " + Source.ToString();
+                    args.feedback = "Kommandosequenz: " + Key.ToString() + " " + Source.ToString();
                     args.resultFunction = Source;
                     OnSlotInput(args);
                 }
@@ -94,7 +94,7 @@ namespace Hanoi
                     Goal = functionType;
                     args.slotNumber = 2;
                     args.resultFunction = Goal;
-                    args.feedback = "Combined Input: " + Key.ToString() + " " + Source.ToString() + " to " + Goal.ToString();
+                    args.feedback = "Kommandosequenz: " + Key.ToString() + " " + Source.ToString() + " to " + Goal.ToString();
                     OnSlotInput(args);
                 }
             }

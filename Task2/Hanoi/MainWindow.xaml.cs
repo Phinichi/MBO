@@ -103,7 +103,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Reset_Click(object sender, RoutedEventArgs e)
         {
-            handleResultFunction(FunctionType.Reset, InputType.Click);
+            handleResultFunction(FunctionType.Neustart, InputType.Click);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Hanoi
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void button_Solve_Click(object sender, RoutedEventArgs e)
         {
-            handleResultFunction(FunctionType.Solve, InputType.Click);          
+            handleResultFunction(FunctionType.Löse, InputType.Click);          
         }
 
         /// <summary>
@@ -500,22 +500,30 @@ namespace Hanoi
                     {
                         switch (functionType)
                         {
-                            case FunctionType.Put:
+                            case FunctionType.Bewege:
+                                resetStartCanvas();
                                 multi = new MultiInput();
                                 multi.SlotInput += OnSlotFilled;
-                                multi.fillSlot(functionType);
+                                lock (locker)
+                                {
+                                    multi.fillSlot(functionType);
+                                }
                                 break;
-                            case FunctionType.Close:
+                            case FunctionType.Schließe:
+                                resetStartCanvas();
                                 multi = new MultiInput();
                                 multi.SlotInput += OnSlotFilled;
-                                multi.fillSlot(functionType);
+                                lock (locker)
+                                {
+                                    multi.fillSlot(functionType);
+                                }
                                 break;
 
-                            case FunctionType.Reset:
+                            case FunctionType.Neustart:
                                 feedback.setMessageBox("Das Spiel wurde neugestartet!");
                                 resetGame();
                                 break;
-                            case FunctionType.Solve:
+                            case FunctionType.Löse:
                                 solveGame();
                                 break;
                             case FunctionType.Canvas1:
@@ -571,7 +579,7 @@ namespace Hanoi
         {
             if (e != null)
             {
-                if (e.resultFunction == FunctionType.CloseEnd) closeApplication();
+                if (e.resultFunction == FunctionType.Schließe2) closeApplication();
                 else 
                 {
                     if (e.slotNumber == 0)
@@ -603,73 +611,76 @@ namespace Hanoi
 
         private void handleMultipleInput(FunctionType functionType, InputType inputType)
         {
-                switch (multi.Key)
-                {
-                    case FunctionType.Close:
-                        if (functionType == FunctionType.MouseOver)
-                        {
-                            multi.fillSlot(FunctionType.CloseEnd);
-                        }
-                        else
-                        {
-                            wrongMultiInput("Kein gültiges Schließkommando!");
-                        }
-                        break;
-                    case FunctionType.Put:
+              lock (locker)
+              {
+                  switch (multi.Key)
+                  {
+                      case FunctionType.Schließe:
+                          if (functionType == FunctionType.MouseOver)
+                          {
+                              multi.fillSlot(FunctionType.Schließe2);
+                          }
+                          else
+                          {
+                              wrongMultiInput("Kein gültiges Schließkommando!");
+                          }
+                          break;
+                      case FunctionType.Bewege:
 
-                        if (functionType == FunctionType.MouseOver && multi.Source == FunctionType.None)
-                        {
-                            functionType = getMouseOverCanvas();
-                            if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
-                            {
-                                Canvas canvas = functionTypeCanvasToCanvas(functionType);
-                                if (canvas.Children.Count > 0) multi.fillSlot(functionType);
-                                else wrongMultiInput("Canvas besitzt keine Scheiben!");
-                            }
-                            else
-                            {
-                                wrongMultiInput("Kein gültiger Canvas selektiert!");
-                            }
+                          if (functionType == FunctionType.MouseOver && multi.Source == FunctionType.None)
+                          {
+                              functionType = getMouseOverCanvas();
+                              if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
+                              {
+                                  Canvas canvas = functionTypeCanvasToCanvas(functionType);
+                                  if (canvas.Children.Count > 0) multi.fillSlot(functionType);
+                                  else wrongMultiInput("Canvas besitzt keine Scheiben!");
+                              }
+                              else
+                              {
+                                  wrongMultiInput("Kein gültiger Canvas selektiert!");
+                              }
 
-                        }
-                        else if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
-                        {
-                            
-                            if (multi.Source == FunctionType.None)
-                            {
-                                Canvas canvas = functionTypeCanvasToCanvas(functionType);
-                                if (canvas.Children.Count > 0) multi.fillSlot(functionType);
-                                else wrongMultiInput("Canvas besitzt keine Scheiben!");
-                            }
-                            else if (multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
-                            {
-                                multi.fillSlot(functionType);
-                            }
-                        }
+                          }
+                          else if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
+                          {
 
-                        else if (functionType == FunctionType.MouseOver2 && multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
-                        {
-                            functionType = getMouseOverCanvas();
-                            if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
-                            {
-                                multi.fillSlot(functionType);
+                              if (multi.Source == FunctionType.None)
+                              {
+                                  Canvas canvas = functionTypeCanvasToCanvas(functionType);
+                                  if (canvas.Children.Count > 0) multi.fillSlot(functionType);
+                                  else wrongMultiInput("Canvas besitzt keine Scheiben!");
+                              }
+                              else if (multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
+                              {
+                                  multi.fillSlot(functionType);
+                              }
+                          }
 
-                            }
-                            else
-                            {
-                                wrongMultiInput("Kein gültiger Canvas selektiert!");
-                            }
-                        }
+                          else if (functionType == FunctionType.MouseOver2 && multi.Source != FunctionType.None && multi.Goal == FunctionType.None)
+                          {
+                              functionType = getMouseOverCanvas();
+                              if (functionType == FunctionType.Canvas1 || functionType == FunctionType.Canvas2 || functionType == FunctionType.Canvas3)
+                              {
 
-                        else
-                        {
-                            wrongMultiInput("Kein gültiges Kommando!");
-                            resetStartCanvas();
-                        }
+                                  multi.fillSlot(functionType);
+                              }
+                              else
+                              {
+                                  wrongMultiInput("Kein gültiger Canvas selektiert!");
+                              }
+                          }
 
-                        break;
-                    default: break;
-                }
+                          else
+                          {
+                              wrongMultiInput("Kein gültiges Kommando!");
+                              resetStartCanvas();
+                          }
+
+                          break;
+                      default: break;
+                  }
+              }        
        }
 
         private void wrongMultiInput(string p)
@@ -733,7 +744,7 @@ namespace Hanoi
     #region Enums
     public enum FunctionType
     {
-        None, Reset, Solve, Canvas1, Canvas2, Canvas3, DiscAmount, Feedback, Close, Put, CloseEnd,
+        None, Neustart, Löse, Canvas1, Canvas2, Canvas3, Scheibenanzahl, Feedback, Schließe, Bewege, Schließe2,
         MouseOver, MouseOver2
     }
 
