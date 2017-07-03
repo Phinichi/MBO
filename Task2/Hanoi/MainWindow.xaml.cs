@@ -622,7 +622,7 @@ namespace Hanoi
                   switch (multi.Key)
                   {
                       case FunctionType.Schließe:
-                          if (functionType == FunctionType.MouseOver)
+                          if (functionType == FunctionType.MouseOver || functionType == FunctionType.Schließe2)
                           {
                               multi.fillSlot(FunctionType.Schließe2);
                           }
