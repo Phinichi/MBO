@@ -140,8 +140,8 @@ namespace Hanoi
             {
                 if (discAmountChanged)
                 {
-                    feedback.setInputFeedback("Disc Amount: " + discAmount);
-                    feedback.setMessageBox("You changed the disc amount to " + discAmount + ".");
+                    feedback.setInputFeedback("Anzahl Scheiben: " + discAmount);
+                    feedback.setMessageBox("Anzahl der Scheiben auf " + discAmount + " geändert.");
                     discAmountChanged = false;
                 }              
             }
@@ -332,7 +332,7 @@ namespace Hanoi
                         }
                         else
                         {
-                            feedback.setMessageBox("No valid move!");
+                            feedback.setMessageBox("Kein gültiger Zug!");
                             return;
                         }
 
@@ -341,11 +341,11 @@ namespace Hanoi
                     this.startCanvas.Children.Remove(startRect);
                     Canvas.SetTop(startRect, rectTop);
                     targetCanvas.Children.Add(startRect);
-                    feedback.setMessageBox("Moved Disc from Canvas " + this.startCanvas.Name + " to " + targetCanvas.Name + ".");
+                    feedback.setMessageBox("Scheibe " + this.startCanvas.Name + " auf " + targetCanvas.Name + "bewegt.");
 
                     if (Canvas3.Children.Count == this.discAmount)
                     {
-                        feedback.setMessageBox("You won the game!");
+                        feedback.setMessageBox("Du hast gewonnen!");
                     }
                 }
             }
@@ -432,6 +432,9 @@ namespace Hanoi
         
             switch (templateNumber)
             {
+                case 0:
+                    feedback.setMessageBox("Geste nicht erkannt, bitte nochmals versuchen.");
+                    break;
                 case 1:
                     handleResultFunction(FunctionType.Canvas1, InputType.Gesture);
                     break;
@@ -472,13 +475,13 @@ namespace Hanoi
                     switch (inputType)
                     {
                         case InputType.Speech:
-                            feedbackInputType = "Speech: ";
+                            feedbackInputType = "Sprache: ";
                             break;
                         case InputType.Click:
-                            feedbackInputType = "Click: ";
+                            feedbackInputType = "Klick: ";
                             break;
                         case InputType.Gesture:
-                            feedbackInputType = "Gesture: ";
+                            feedbackInputType = "Geste: ";
                             break;
                         default: break;
                     }
@@ -509,7 +512,7 @@ namespace Hanoi
                                 break;
 
                             case FunctionType.Reset:
-                                feedback.setMessageBox("You resetted the Game!");
+                                feedback.setMessageBox("Das Spiel wurde neugestartet!");
                                 resetGame();
                                 break;
                             case FunctionType.Solve:
@@ -547,7 +550,7 @@ namespace Hanoi
         {
                 stopTimer();
                 multi = null;
-                feedback.setMessageBox("Time passed. Resetting inputs.");
+                feedback.setMessageBox("Zeit für Multiinput abgelaufen.");
         }
 
         private void stopTimer()
