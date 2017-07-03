@@ -45,12 +45,12 @@ namespace Hanoi
                // "start",
                 "reset",
                 "löse",
-                "setze",
+                "bewege",
                 "nummer eins",
                 "nummer zwei",
                 "nummer drei",
                 "dies",
-                "dort",
+                "dorthin",
                 "schließe"
             });
 
@@ -74,8 +74,8 @@ namespace Hanoi
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
-            feedback.setMessageBox("Speech detected!");
-            Console.WriteLine("Speech detected!");
+            //feedback.setMessageBox("Speech detected!");
+            //Console.WriteLine("Speech detected!");
         }
 
         private void onSpeechRecog(object sender, SpeechRecognizedEventArgs e)
@@ -107,13 +107,13 @@ namespace Hanoi
                     break;
 
                     //MULTIINPUTS
-                case "setze": 
+                case "bewege": 
                     args.resultFunction = FunctionType.Put;
                     break;
                 case "dies": 
                     args.resultFunction = FunctionType.MouseOver;
                     break;
-                case "dort":
+                case "dorthin":
                     args.resultFunction = FunctionType.MouseOver2;
                     break;
                 case "nummer eins": 
