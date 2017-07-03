@@ -54,6 +54,34 @@ namespace Hanoi
             }
         }
 
+        private List<double> templateClose1;
+
+        public List<double> TemplateClose1
+        {
+            get
+            {
+                return templateClose1;
+            }
+            set
+            {
+                if (templateClose1 == null) templateClose1 = value;
+            }
+        }
+
+        private List<double> templateClose2;
+
+        public List<double> TemplateClose2
+        {
+            get
+            {
+                return templateClose2;
+            }
+            set
+            {
+                if (templateClose2 == null) templateClose2 = value;
+            }
+        }
+
         #region Initialisation
 
         public Gestures()
@@ -66,12 +94,18 @@ namespace Hanoi
             templateOne = new List<double>();
             templateTwo = new List<double>();
             templateThree = new List<double>();
+            templateClose1 = new List<double>();
+            templateClose2 = new List<double>();
 
             MyClass.Deserialize(templateOne, @"../../template1.xml");
 
             MyClass.Deserialize(templateTwo, @"../../template2.xml");
 
             MyClass.Deserialize(templateThree, @"../../template3.xml");
+
+            MyClass.Deserialize(templateClose1, @"../../templateClose1.xml");
+
+            MyClass.Deserialize(templateClose2, @"../../templateClose2.xml");
         }
 
         #endregion
@@ -85,6 +119,8 @@ namespace Hanoi
                 case 1: return templateOne; break;
                 case 2: return templateTwo; break;
                 case 3: return templateThree; break;
+                case 4: return templateClose1; break;
+                case 5: return templateClose2; break;
                 default: return new List<double>();
             }
         }
@@ -139,7 +175,7 @@ namespace Hanoi
             }
             
             //Creating Templates in template1,2,3.xml here
-            //MyClass.SerializeObject(gestureAngles, "template2.xml");
+            MyClass.SerializeObject(gestureAngles, "templateClose2.xml");
 
             return gestureAngles;
         }
@@ -147,18 +183,40 @@ namespace Hanoi
       
 
         private int classifyGesture(List<double> gestureAngles)
-        {
-
+        {                     
             double localDistanceToTemplate1 = calculateLocalDistance(gestureAngles, TemplateOne);
             double localDistanceToTemplate2 = calculateLocalDistance(gestureAngles, TemplateTwo);
             double localDistanceToTemplate3 = calculateLocalDistance(gestureAngles, TemplateThree);
+            double localDistanceToClose1 = calculateLocalDistance(gestureAngles, TemplateClose1);
+            double localDistanceToClose2 = calculateLocalDistance(gestureAngles, TemplateClose2);
 
-            int i = 0;
+            List<double> gestures = new List<double>();
+            gestures.Add(localDistanceToTemplate1);
+            gestures.Add(localDistanceToTemplate2);
+            gestures.Add(localDistanceToTemplate3);
+            gestures.Add(localDistanceToClose1);
+            gestures.Add(localDistanceToClose2);
+
+            // sort list by distances
+            var sorted = gestures
+                            .Select((x, i) => new KeyValuePair<double, int>(x, i))
+                            .OrderBy(x => x.Key)
+                            .ToList();
+
+            // get index of shortest distance
+            List<int> idx = sorted.Select(x => x.Value).ToList();
+
+            // inc since index starts at 0
+            return idx[0]+1;
+
+
+
+            /*int i = 0;
             if (localDistanceToTemplate1 < localDistanceToTemplate2 && localDistanceToTemplate1 < localDistanceToTemplate3) i = 1;
             else if (localDistanceToTemplate2 < localDistanceToTemplate1 && localDistanceToTemplate2 < localDistanceToTemplate3) i = 2;
             else if (localDistanceToTemplate3 < localDistanceToTemplate1 && localDistanceToTemplate3 < localDistanceToTemplate2) i = 3;
 
-            return i;
+            return i;*/
         }
 
         private double calculateLocalDistance(List<double> gestureAngles, List<double> templateAngles)

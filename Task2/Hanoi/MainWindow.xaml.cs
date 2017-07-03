@@ -338,8 +338,9 @@ namespace Hanoi
                     this.startCanvas.Children.Remove(startRect);
                     Canvas.SetTop(startRect, rectTop);
                     targetCanvas.Children.Add(startRect);
-                    feedback.setMessageBox("Scheibe " + this.startCanvas.Name + " auf " + targetCanvas.Name + "bewegt.");
+                    feedback.setMessageBox(this.startCanvas.Name + " auf " + targetCanvas.Name + " bewegt.");
 
+                    // Winning Condition
                     if (Canvas3.Children.Count == this.discAmount)
                     {
                         feedback.setMessageBox("Du hast gewonnen!");

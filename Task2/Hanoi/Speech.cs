@@ -74,7 +74,7 @@ namespace Hanoi
 
         private void onSpeechDetection(object sender, SpeechDetectedEventArgs e)
         {
-            feedback.setMessageBox("Sprache erkannt!");
+            //feedback.setMessageBox("Sprache erkannt!");
             Console.WriteLine("Speech detected!");
         }
 
@@ -138,7 +138,7 @@ namespace Hanoi
 
         private void onNotRecog()
         {
-            feedback.setMessageBox("Speech not recogniced!");
+            feedback.setMessageBox("Spracheingabe nicht erkannt.");
         }
 
         protected virtual void OnSpeechFeedback(SpeechEventArgs e)
