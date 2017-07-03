@@ -18,9 +18,9 @@
         <Canvas x:Name="Canvas3" AllowDrop="True" MouseLeftButtonUp="canvas_Click" Background="#FFF0F0F0" VerticalAlignment="Bottom"  Margin="434,0,10,73" Height="300" Width="200" Grid.Row="2"/>
         <Slider x:Name="DiscAmountSlider" HorizontalAlignment="Left" Margin="327,348,0,0" VerticalAlignment="Top" Width="126" Minimum="3" Value ="3" ValueChanged="Slider_ValueChanged" Thumb.DragCompleted="Slider_DragCompleted" SmallChange="1" Cursor="" Grid.Row="2" AutoToolTipPlacement="TopLeft" TickPlacement="TopLeft" Height="22"/>
         <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="227,344,0,0" VerticalAlignment="Top" Grid.Row="2" Height="26" Width="100"/>
-        <Button x:Name="ButtonReset" Content="Reset" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,342,537,4" Grid.Row="2" />
-        <Button x:Name="ButtonSolve" Content="Solve" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,342,434,4" Grid.Row="2" />
-        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Green Canvas: &#xA;Canvas is selected&#xA;&#xA;Gesture Inputs:&#xA;hold right mouse&#xA;button and draw&#xA;1, 2 (long bottom &#xD;&#xA;line), or 3&#xA;Speech Inputs: say&#xA;&quot;eins&quot;, &quot;zwei&quot;,&quot;drei&quot;&#xA;&quot;reset&quot;, or &quot;löse&quot;" Margin="652,3,-136,228" Width="128" Grid.RowSpan="3" Height="183" RenderTransformOrigin="0.5,0.5" >
+        <Button x:Name="ButtonReset" Content="Neustart" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,342,537,4" Grid.Row="2" />
+        <Button x:Name="ButtonSolve" Content="Lösen" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,342,434,4" Grid.Row="2" />
+        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Grün: Selektiert&#xA;&#xA;Gesten: Rechte&#xD;&#xA;Maustaste gedrückt&#xD;&#xA;halten und&#xA;1, 2 oder 3 malen&#xA;Spracheingabe:&#xA;&quot;eins&quot;, &quot;zwei&quot;,&quot;drei&quot;&#xA;&quot;reset&quot; oder &quot;löse&quot;" Margin="652,3,-136,228" Width="128" Grid.RowSpan="3" Height="183" RenderTransformOrigin="0.5,0.5" >
             <Label.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -30,12 +30,12 @@
                 </TransformGroup>
             </Label.RenderTransform>
         </Label>
-        <Label Name="LastInput" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Last Input:" Margin="686,139,-120,200" Width="78" Grid.Row="2" Height="24" />
-        <Label Name="CanvasNumbers" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas 1" Margin="10,4,434,2" Width="200" Grid.Row="1" Height="24"/>
+        <Label Name="LastInput" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Input Log:" Margin="686,139,-120,200" Width="78" Grid.Row="2" Height="24" />
+        <Label Name="CanvasNumbers" HorizontalAlignment="Center" VerticalAlignment="Center" Content="" Margin="10,4,434,2" Width="200" Grid.Row="1" Height="24"/>
         <Label Name="InputFeedbackOld" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" Margin="652,191,-136,0" Grid.Row="2" RenderTransformOrigin="5.026,0.594" Height="143" Width="128" />
         <Label Name="InputFeedbackNew" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Top" Content="" Margin="652,163,-136,0" Grid.Row="2" RenderTransformOrigin="5.026,0.594" Height="23" Width="128" />
-        <Label x:Name="CanvasNumbers_Copy" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas 2" Margin="222,4,222,2" Width="200" Grid.Row="1" Height="24" />
-        <Label x:Name="CanvasNumbers_Copy1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas 3" Margin="432,4,12,2" Width="200" Grid.Row="1" Height="24" />
+        <Label x:Name="CanvasNumbers_Copy" HorizontalAlignment="Center" VerticalAlignment="Center" Content="" Margin="222,4,222,2" Width="200" Grid.Row="1" Height="24" />
+        <Label x:Name="CanvasNumbers_Copy1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="" Margin="432,4,12,2" Width="200" Grid.Row="1" Height="24" />
         <Label x:Name="Messages" HorizontalAlignment="Center" VerticalAlignment="Center" Content="" Margin="10,310,12,42" Width="622" Grid.Row="2" Height="24"/>
     </Grid>
 
