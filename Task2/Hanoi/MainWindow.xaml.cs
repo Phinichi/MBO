@@ -429,30 +429,34 @@ namespace Hanoi
             inputGesture = false;
 
             int templateNumber = gesture.GetTemplateNumber(gesturePositions);
-        
-            switch (templateNumber)
-            {
-                case 0:
-                    feedback.setMessageBox("Geste nicht erkannt, bitte erneut versuchen.");
-                    break;
-                case 1:
-                    handleResultFunction(FunctionType.Canvas1, InputType.Gesture);
-                    break;
-                case 2:
-                    handleResultFunction(FunctionType.Canvas2, InputType.Gesture);
-                    break;
-                case 3:
-                    handleResultFunction(FunctionType.Canvas3, InputType.Gesture);
-                    break;
-                case 4:
-                    handleResultFunction(FunctionType.Schließe, InputType.Gesture);
-                    break;
-                case 5:
-                    handleResultFunction(FunctionType.Schließe2, InputType.Gesture);
-                    break;
-            }
 
-            gesturePositions.Clear();
+                switch (templateNumber)
+                {
+                    case 0:
+                        feedback.setMessageBox("Geste nicht erkannt, bitte erneut versuchen.");
+                        break;
+                    case 1:
+                        handleResultFunction(FunctionType.Canvas1, InputType.Gesture);
+                        break;
+                    case 2:
+                        handleResultFunction(FunctionType.Canvas2, InputType.Gesture);
+                        break;
+                    case 3:
+                        handleResultFunction(FunctionType.Canvas3, InputType.Gesture);
+                        break;
+                    case 4:
+                        handleResultFunction(FunctionType.Schließe, InputType.Gesture);
+                        break;
+                    case 5:
+                        handleResultFunction(FunctionType.Schließe2, InputType.Gesture);
+                        break;
+                    default:
+                        feedback.setMessageBox("Geste nicht erkannt, bitte erneut versuchen.");
+                        break;
+                }
+
+                gesturePositions.Clear();
+               
         }
 
         #endregion
@@ -508,19 +512,19 @@ namespace Hanoi
                         {
                             case FunctionType.Bewege:
                                 resetStartCanvas();
-                                multi = new MultiInput();
-                                multi.SlotInput += OnSlotFilled;
                                 lock (locker)
                                 {
+                                    multi = new MultiInput();
+                                    multi.SlotInput += OnSlotFilled;
                                     multi.fillSlot(functionType);
                                 }
                                 break;
                             case FunctionType.Schließe:
                                 resetStartCanvas();
-                                multi = new MultiInput();
-                                multi.SlotInput += OnSlotFilled;
                                 lock (locker)
                                 {
+                                    multi = new MultiInput();
+                                    multi.SlotInput += OnSlotFilled;
                                     multi.fillSlot(functionType);
                                 }
                                 break;

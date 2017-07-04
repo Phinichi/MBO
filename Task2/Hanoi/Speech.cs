@@ -14,19 +14,21 @@ namespace Hanoi
 
         public event EventHandler<SpeechEventArgs> SpeechFeedback;
 
+        public SpeechRecognitionEngine sre = null;
+
         public Speech(Feedback feedback)
         {
             this.feedback = feedback;
             initializeSpeechRec();
         }
 
-        private void initializeSpeechRec()
+        public void initializeSpeechRec()
         {
 
             CultureInfo ci = new CultureInfo("de-DE");
 
             //NEEDS TO SWITCH TO en-US
-            SpeechRecognitionEngine sre = new SpeechRecognitionEngine(ci);
+            sre = new SpeechRecognitionEngine(ci);
 
             //SpeechRecognizer sr = new SpeechRecognizer();
             //sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(onSpeechRecog);

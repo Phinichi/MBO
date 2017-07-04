@@ -20,7 +20,7 @@
         <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="227,344,0,0" VerticalAlignment="Top" Grid.Row="2" Height="26" Width="100"/>
         <Button x:Name="ButtonReset" Content="Neustart" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,342,537,4" Grid.Row="2" />
         <Button x:Name="ButtonSolve" Content="Lösen" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,342,434,4" Grid.Row="2" />
-        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Grün: Selektiert&#xA;&#xA;Gesten: Rechte&#xA;Maustaste gedrückt&#xA;halten und&#xA;1, 2 oder 3 malen.&#xD;&#xA;Zum Schließen&#xD;&#xA;ein Kreuz &quot;/&quot; + &quot;\&quot;&#xA;&#xA;Spracheingabe:&#xA;&quot;Eins&quot;, &quot;Zwei&quot;,&quot;Drei&quot;&#xA;&quot;Neustart&quot;, &quot;Löse&quot;&#xD;&#xA;oder &quot;Schließe dies&quot;" Margin="652,10,-136,201" Width="128" Grid.RowSpan="3" Height="217" RenderTransformOrigin="0.5,0.5" >
+        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Grün: Selektiert&#xD;&#xA;&#xD;&#xA;Gesten: R. Maustaste +&#xA;gedrückt, dann malen&#xD;&#xA;Canvas:  1, 2,  3&#xA;Schließen: /, dann \&#xA;&#xD;&#xA;Spracheingabe:&#xA;Eins, Zwei, Drei,&#xD;&#xA;Nummer X, Neustart,&#xD;&#xA;Löse, Schließe  + dies,&#xD;&#xA;Bewege+ X(1,2,3,dies)&#xD;&#xA;+ X(1,2,3, dorthin)" Margin="652,10,-136,201" Width="128" Grid.RowSpan="3" Height="217" RenderTransformOrigin="0.5,0.5" >
             <Label.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
