@@ -266,7 +266,7 @@ namespace Hanoi
         private void resetGame()
         {
             Console.WriteLine("\n Reset Game.");
-            if (t != null && !t.IsCompleted)
+            if (t != null)
             {
                 ts.Cancel();
                 ts = null;
