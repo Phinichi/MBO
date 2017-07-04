@@ -364,7 +364,7 @@ namespace Hanoi
         /// <param name="othrCanvas">The extra canvas.</param>
         private void solveAlgorithm(double n, Canvas strtCanvas, Canvas tarCanvas, Canvas othrCanvas)
         {
-
+            
             if (n == 1)
             {
                this.Dispatcher.Invoke(
@@ -375,6 +375,7 @@ namespace Hanoi
                             startCanvas = strtCanvas;
                             Rectangle startRect = strtCanvas.Children[strtCanvas.Children.Count - 1] as Rectangle;
                             Console.WriteLine("\n Move " + startRect.Name + " from rod " + strtCanvas.Name + " to rod" + tarCanvas.Name);
+                            
                             moveDisc(tarCanvas);
                         }
                         else return;

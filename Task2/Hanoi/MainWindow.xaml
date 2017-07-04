@@ -20,7 +20,7 @@
         <Label Content="Anzahl Scheiben:" HorizontalAlignment="Left" Margin="227,344,0,0" VerticalAlignment="Top" Grid.Row="2" Height="26" Width="100"/>
         <Button x:Name="ButtonReset" Content="Neustart" Click="button_Reset_Click" IsEnabled="True" Visibility="Visible" Margin="10,342,537,4" Grid.Row="2" />
         <Button x:Name="ButtonSolve" Content="Lösen" Click="button_Solve_Click" IsEnabled="True" Visibility="Visible" Margin="113,342,434,4" Grid.Row="2" />
-        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Klick: Canvas1, 2, 3&#xD;&#xA;&#xD;&#xA;Gesten: R. Maustaste &#xD;&#xA;+ Symbol:  1, 2,  3&#xD;&#xA;&#xA;Sprache: (Nummer) 1, 2, 3,&#xD;&#xA;Löse, Neustart,&#xD;&#xA;&#xD;&#xA;Multipel: &#xD;&#xA;Schließe, / + dies, \&#xD;&#xA;Bewege + 1, 2, 3 ,dies*&#xD;&#xA;+ 1, 2, 3, dorthin*&#xD;&#xA;&#xD;&#xA;* dies, dorthin: Mouseover" Margin="651,0,-139,201" Width="132" Height="206" RenderTransformOrigin="0.5,0.5" FontSize="10.5" Grid.Row="1" Grid.RowSpan="2" >
+        <Label Name="Legend" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Klick: Canvas1, 2, 3&#xD;&#xA;&#xD;&#xA;Gesten: R. Maustaste &#xD;&#xA;+ Symbol:  1, 2,  3&#xD;&#xA;&#xA;Sprache: (Nummer) 1, 2, 3,&#xD;&#xA;Löse, Neustart,&#xD;&#xA;&#xD;&#xA;Multipel: &#xD;&#xA;Schließe, / + dies, \&#xD;&#xA;Bewege + 1, 2, 3 ,dies*&#xD;&#xA;+ 1, 2, 3, dorthin*&#xD;&#xA;&#xD;&#xA;* dies, dorthin: Mouseover" Margin="652,2,-140,199" Width="132" Height="206" RenderTransformOrigin="0.5,0.5" FontSize="10.5" Grid.Row="1" Grid.RowSpan="2" >
             <Label.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -37,7 +37,7 @@
         <Label x:Name="CanvasNumbers_Copy" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas2" Margin="222,4,222,2" Width="200" Grid.Row="1" Height="24" />
         <Label x:Name="CanvasNumbers_Copy1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Canvas3" Margin="432,4,12,2" Width="200" Grid.Row="1" Height="24" />
         <Label x:Name="Messages" HorizontalAlignment="Center" VerticalAlignment="Center" Content="" Margin="10,310,12,37" Width="622" Grid.Row="2" Height="29"/>
-        <Label x:Name="LastInput_Copy" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Eingabemöglichkeiten" Margin="652,5,-136,24" Width="128" Height="24" Grid.RowSpan="2" />
+        <Label x:Name="LastInput_Copy" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Eingabemöglichkeiten" Margin="652,1,-136,28" Width="128" Height="24" Grid.RowSpan="2" />
     </Grid>
 
 
